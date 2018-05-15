@@ -6,8 +6,9 @@ import (
 
 // Entity generator entity
 type Entity struct {
-	FsMap map[string]*awsset.FileSystem
-	Paths []string
+	DirMap  map[string][]string
+	FileMap map[string]*awsset.File
+	Paths   []string
 }
 
 // UseCase interface

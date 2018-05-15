@@ -13,7 +13,8 @@ import (
 // UseCase file usecase
 type UseCase struct {
 	rr         generator.RegexpRepository
-	fsMap      map[string]*awsset.FileSystem
+	fileMap    map[string]*awsset.File
+	dirMap     map[string][]string
 	validPaths []string
 }
 
@@ -26,15 +27,17 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator.Entity, error) {
 	u.rr.CompilePatterns(ignorePatterns)
 
-	u.fsMap = make(map[string]*awsset.FileSystem)
+	u.fileMap = make(map[string]*awsset.File)
 	u.validPaths = make([]string, 0)
+	u.dirMap = make(map[string][]string)
 	for i := range paths {
 		path := paths[i]
 		u.addFile(path)
 	}
 	e := &generator.Entity{
-		FsMap: u.fsMap,
-		Paths: u.validPaths,
+		DirMap:  u.dirMap,
+		FileMap: u.fileMap,
+		Paths:   u.validPaths,
 	}
 
 	return e, nil
@@ -48,7 +51,12 @@ func (u *UseCase) addFile(path string) {
 	if err != nil {
 		return
 	}
+	u.validPaths = append(u.validPaths, path)
 	if fi.IsDir() {
+		children := u.dirMap[path]
+		if children == nil {
+			children = make([]string, 0)
+		}
 		var files []os.FileInfo
 		files, err = ioutil.ReadDir(path)
 		if err != nil {
@@ -56,19 +64,19 @@ func (u *UseCase) addFile(path string) {
 		}
 		for i := range files {
 			f := files[i]
-			u.addFile(filepath.Join(path, f.Name()))
+			childPath := filepath.Join(path, f.Name())
+			children = append(children, childPath)
+			u.addFile(childPath)
 		}
+		u.dirMap[path] = children
+		d := awsset.NewFromFileInfo(fi, path, nil)
+		u.fileMap[path] = d
 		return
 	}
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fs := &awsset.FileSystem{
-		FileInfo: fi,
-		Path:     path,
-		Data:     data,
-	}
-	u.fsMap[path] = fs
-	u.validPaths = append(u.validPaths, path)
+	fs := awsset.NewFromFileInfo(fi, path, data)
+	u.fileMap[path] = fs
 }
