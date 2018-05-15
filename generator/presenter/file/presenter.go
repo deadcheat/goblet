@@ -2,7 +2,7 @@ package file
 
 import (
 	"errors"
-	"io"
+	"fmt"
 
 	"github.com/deadcheat/awsset/generator"
 	"github.com/urfave/cli"
@@ -10,19 +10,27 @@ import (
 
 // Presenter acts for presentation
 type Presenter struct {
-	w       io.Writer
 	usecase generator.UseCase
 }
 
 // New presenter
-func New(w io.Writer, u generator.UseCase) *Presenter {
+func New(u generator.UseCase) *Presenter {
 	return &Presenter{
-		w:       w,
 		usecase: u,
 	}
 }
 
 func (p *Presenter) action(c *cli.Context) error {
+	if c.NArg() == 0 {
+		return errors.New("Please specify the argument")
+	}
+	paths := append([]string{c.Args().First()}, c.Args().Tail()...)
+	ignores := c.StringSlice("except")
+	entities, err := p.usecase.LoadFiles(paths, ignores)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%#v", entities)
 	return nil
 }
 

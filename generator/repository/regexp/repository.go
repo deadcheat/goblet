@@ -33,7 +33,7 @@ func (r *Repository) CompilePatterns(patterns []string) error {
 func (r *Repository) MatchAny(path string) bool {
 	for i := range r.r {
 		regexp := r.r[i]
-		if regexp.MatchString(path) {
+		if regexp != nil && regexp.MatchString(path) {
 			return true
 		}
 	}
