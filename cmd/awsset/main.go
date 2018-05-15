@@ -16,6 +16,7 @@ func main() {
 
 	app.Name = "awsset"
 	app.Usage = "make a binary contain some assets"
+	app.Version = "0.1.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringSliceFlag{
