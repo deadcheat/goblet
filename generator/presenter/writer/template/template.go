@@ -19,28 +19,28 @@ import(
 
 	"github.com/deadcheat/awsset"
 )
-
+{{ $FileMap := .FileMap}}
+{{ $DirMap := .DirMap}}
 // {{ .VarName }} a generated file system
 var {{ .VarName }} = awsset.NewFS(
 	map[string][]string{
-		{{- range $k, $v := .DirMap}}
-		"{{ $k }}": []string{
-			{{ range $s := $v }}"{{ $s }}", {{ end }}
-		},
+		{{- range $p := .Paths }}{{ with (index $DirMap $p)}}
+		"{{ $p }}": []string{
+			{{ range $s := . }}"{{ $s }}", {{ end }}
+		},{{ end }}
 		{{- end }}
 	},
 	map[string]*File {
-		{{- range $k, $v := .FileMap}}
-		"{{$k}}": NewFile("{{$k}}", _{{ sha1 $k }}, {{ printf "%#v" $v.FileMode }}, time.Unix({{ $v.ModifiedAt.Unix }}, {{ $v.ModifiedAt.UnixNano }})),
+		{{- range $p := .Paths }}{{ with (index $FileMap $p)}}
+		"{{$p}}": awsset.NewFile("{{$p}}", _{{ sha1 $p }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
 		{{- end }}
 	},
 )
 
 // binary data
 var (
-	{{ $m := .FileMap}}
 	{{- range $p := .Paths }}
-	_{{ sha1 $p}} = {{ with (index $m $p) }}{{if not .Data }}nil{{ else }}{{ printf "%#v" .Data }}{{ end }}{{ end }}
+	_{{ sha1 $p}} = {{ with (index $FileMap $p) }}{{if not .Data }}nil{{ else }}{{ printf "%#v" .Data }}{{ end }}{{ end }}
 	{{- end }}
 )
 `

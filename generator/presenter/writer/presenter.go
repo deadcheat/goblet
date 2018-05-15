@@ -52,7 +52,6 @@ func (p *Presenter) action(c *cli.Context) error {
 
 	var writer io.Writer = os.Stdout
 	outName := c.String("out")
-	fmt.Println(outName)
 	if outName != "" {
 		// current dir
 		target, _ := filepath.Abs(outName)
