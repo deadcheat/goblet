@@ -1,9 +1,11 @@
 package file
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"errors"
 	"fmt"
+	"go/format"
 	"html/template"
 	"io"
 	"os"
@@ -50,23 +52,33 @@ func (p *Presenter) action(c *cli.Context) error {
 		return err
 	}
 
-	var writer io.Writer = os.Stdout
-	outName := c.String("out")
-	if outName != "" {
-		// current dir
-		target, _ := filepath.Abs(outName)
-		writer, err = os.OpenFile(target, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-		if err != nil {
-			return err
-		}
-	}
-	if err := t.Execute(writer, &pt.Assets{
+	var b bytes.Buffer
+	if err = t.Execute(&b, &pt.Assets{
 		PackageName: c.String("package"),
 		VarName:     c.String("var"),
 		DirMap:      e.DirMap,
 		FileMap:     e.FileMap,
 		Paths:       e.Paths,
 	}); err != nil {
+		return err
+	}
+
+	// gofmt
+	formatted, err := format.Source(b.Bytes())
+
+	var writer io.Writer = os.Stdout
+	outName := c.String("out")
+	if outName != "" {
+		// current dir
+		target, _ := filepath.Abs(outName)
+		f, err := os.OpenFile(target, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		writer = f
+	}
+	if _, err = fmt.Fprintln(writer, string(formatted)); err != nil {
 		return err
 	}
 	return nil
