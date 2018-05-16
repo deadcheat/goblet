@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sort"
 
 	"github.com/deadcheat/awsset"
 	"github.com/deadcheat/awsset/generator"
@@ -26,9 +25,7 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 
 // LoadFiles load files for given paths, except what matches given ignore path regex
 func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator.Entity, error) {
-	if err := u.rr.CompilePatterns(ignorePatterns); err != nil {
-		return nil, err
-	}
+	u.rr.CompilePatterns(ignorePatterns)
 
 	u.fileMap = make(map[string]*awsset.File)
 	u.validPaths = make([]string, 0)
@@ -37,7 +34,6 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 		path := paths[i]
 		u.addFile(path)
 	}
-	sort.Strings(u.validPaths)
 	e := &generator.Entity{
 		DirMap:  u.dirMap,
 		FileMap: u.fileMap,
@@ -48,6 +44,7 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 }
 
 func (u *UseCase) addFile(path string) {
+	vPath := filepath.Join("/", path)
 	if u.rr.MatchAny(path) {
 		return
 	}
@@ -55,9 +52,9 @@ func (u *UseCase) addFile(path string) {
 	if err != nil {
 		return
 	}
-	u.validPaths = append(u.validPaths, path)
+	u.validPaths = append(u.validPaths, vPath)
 	if fi.IsDir() {
-		children := u.dirMap[path]
+		children := u.dirMap[vPath]
 		if children == nil {
 			children = make([]string, 0)
 		}
@@ -72,15 +69,15 @@ func (u *UseCase) addFile(path string) {
 			children = append(children, childPath)
 			u.addFile(childPath)
 		}
-		u.dirMap[path] = children
-		d := awsset.NewFromFileInfo(fi, path, nil)
-		u.fileMap[path] = d
+		u.dirMap[vPath] = children
+		d := awsset.NewFromFileInfo(fi, vPath, nil)
+		u.fileMap[vPath] = d
 		return
 	}
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fs := awsset.NewFromFileInfo(fi, path, data)
-	u.fileMap[path] = fs
+	fs := awsset.NewFromFileInfo(fi, vPath, data)
+	u.fileMap[vPath] = fs
 }

@@ -32,7 +32,7 @@ var {{ .VarName }} = awsset.NewFS(
 	},
 	map[string]*File {
 		{{- range $p := .Paths }}{{ with (index $FileMap $p)}}
-		"{{$p}}": awsset.NewFile("{{$p}}", _{{ sha1 $p }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
+		"{{$p}}": awsset.NewFile("{{$p}}", _{{ .VarName }}{{ sha1 $p }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
 		{{- end }}
 	},
 )
@@ -40,7 +40,7 @@ var {{ .VarName }} = awsset.NewFS(
 // binary data
 var (
 	{{- range $p := .Paths }}
-	_{{ sha1 $p}} = {{ with (index $FileMap $p) }}{{if not .Data }}nil{{ else }}{{ printf "%#v" .Data }}{{ end }}{{ end }}
+	_{{ .VarName }}{{ sha1 $p}} = {{ with (index $FileMap $p) }}{{if not .Data }}nil{{ else }}{{ printf "%#v" .Data }}{{ end }}{{ end }}
 	{{- end }}
 )
 `
