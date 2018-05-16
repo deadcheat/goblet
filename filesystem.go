@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"github.com/k0kubun/pp"
 )
 
 // FileSystem exported to a generated asset file
@@ -39,7 +37,6 @@ func (fs *FileSystem) Exists(name string) bool {
 // Open file from name
 func (fs *FileSystem) Open(name string) (http.File, error) {
 	f, ok := fs.Files[fs.nameResolute(name)]
-	pp.Println(fs.nameResolute(name), f, ok)
 	if !ok {
 		return nil, ErrFileNotFound
 	}
@@ -48,8 +45,16 @@ func (fs *FileSystem) Open(name string) (http.File, error) {
 
 func (fs *FileSystem) nameResolute(name string) string {
 	if name != "" && strings.HasPrefix(name, fs.pathPrefix) {
-		pp.Println(name, fs.pathPrefix, filepath.Join("/", strings.TrimPrefix(name, fs.pathPrefix)))
 		return filepath.Join("/", strings.TrimPrefix(name, fs.pathPrefix))
 	}
 	return name
+}
+
+// ReadFile read file and return []byte like as ioutil.ReadFile
+func (fs *FileSystem) ReadFile(filename string) ([]byte, error) {
+	f, ok := fs.Files[fs.nameResolute(name)]
+	if !ok {
+		return nil, ErrFileNotFound
+	}
+	return f.Data, nil
 }
