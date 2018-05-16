@@ -39,3 +39,36 @@ GLOBAL OPTIONS:
    --version, -v              print the version
 ```
 
+## Examples
+see example dir for full of codes.
+
+### http static file
+
+Generated asset is generated as implementation of http.FileSystem
+```
+	http.Handle("/", http.FileServer(assetsbin.Assets))
+	log.Println("start server localhost:3000")
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		log.Fatal(err)
+	}
+```
+
+Sometimes we changed root on http request from "/" such as "/statics/",
+awsset.FileSystem has `WithPrefix` func.
+```
+	http.Handle("/static/", http.FileServer(assetsbin.Assets.WithPrefix("/static/")))
+	log.Println("start server localhost:3000")
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		log.Fatal(err)
+	}
+```
+
+### reading config file with config library like [github.com/spf13/viper](https://github.com/spf13/viper)
+awsset.File has bytes.Reader, so you can use awsset.File directly
+```
+	viper.SetConfigType("toml")
+	f, _ := configbin.Assets.File("/config/configfile.toml")
+	viper.ReadConfig(f)
+	var s Server
+	_ = viper.UnmarshalKey("server", &s)
+```
