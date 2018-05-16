@@ -14,7 +14,7 @@ type File struct {
 	FileMode   os.FileMode
 	ModifiedAt time.Time
 	// implementation for io.Reader and io.Seeker
-	*bytes.Reader
+	buf *bytes.Reader
 }
 
 // NewFromFileInfo return new file
@@ -24,7 +24,6 @@ func NewFromFileInfo(fi os.FileInfo, p string, d []byte) *File {
 		Data:       d,
 		FileMode:   fi.Mode(),
 		ModifiedAt: fi.ModTime(),
-		Reader:     bytes.NewReader(d),
 	}
 }
 
@@ -35,12 +34,12 @@ func NewFile(p string, d []byte, m os.FileMode, mat time.Time) *File {
 		Data:       d,
 		FileMode:   m,
 		ModifiedAt: mat,
-		Reader:     bytes.NewReader(d),
 	}
 }
 
 // Close implement for io.Closer
 func (f *File) Close() error {
+	f.buf = nil
 	return nil
 }
 
@@ -82,4 +81,22 @@ func (f *File) IsDir() bool {
 // Sys implement for os.FileInfo
 func (f *File) Sys() interface{} {
 	return nil
+}
+
+// Read for io.Reader
+func (f *File) Read(data []byte) (int, error) {
+	if f.buf == nil {
+		f.buf = bytes.NewReader(f.Data)
+	}
+
+	return f.buf.Read(data)
+}
+
+// Seek for io.Seeker
+func (f *File) Seek(offset int64, whence int) (int64, error) {
+	if f.buf == nil {
+		f.buf = bytes.NewReader(f.Data)
+	}
+
+	return f.buf.Seek(offset, whence)
 }
