@@ -34,7 +34,9 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 	u.dirMap = make(map[string][]string)
 	for i := range paths {
 		path := paths[i]
-		u.addFile(path)
+		if err := u.addFile(path); err != nil {
+			return nil, err
+		}
 	}
 	e := &generator.Entity{
 		DirMap:  u.dirMap,
@@ -45,14 +47,14 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 	return e, nil
 }
 
-func (u *UseCase) addFile(path string) (vPath string, err error) {
-	vPath = filepath.Join("/", path)
+func (u *UseCase) addFile(path string) (err error) {
+	vPath := filepath.Join("/", path)
 	if u.rr.MatchAny(path) {
-		return "", nil
+		return nil
 	}
 	fi, err := os.Stat(path)
 	if err != nil {
-		return "", err
+		return err
 	}
 	u.validPaths = append(u.validPaths, vPath)
 	if fi.IsDir() {
@@ -69,27 +71,22 @@ func (u *UseCase) addFile(path string) (vPath string, err error) {
 		for i := range files {
 			f := files[i]
 			childPath := filepath.Join(path, f.Name())
-			var childVPath string
-			childVPath, err = u.addFile(childPath)
+			err = u.addFile(childPath)
 			if err != nil {
-				return "", err
+				return err
 			}
-			// skip adding children when child is directory
-			if childVPath == "" {
-				continue
-			}
-			children = append(children, childVPath)
+			children = append(children, filepath.Base(childPath))
 		}
 		u.dirMap[vPath] = children
 		d := awsset.NewFromFileInfo(fi, vPath, nil)
 		u.fileMap[vPath] = d
-		return "", nil
+	} else {
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		file := awsset.NewFromFileInfo(fi, vPath, data)
+		u.fileMap[vPath] = file
 	}
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fs := awsset.NewFromFileInfo(fi, vPath, data)
-	u.fileMap[vPath] = fs
-	return vPath, nil
+	return nil
 }

@@ -10,13 +10,13 @@ import (
 var Assets = awsset.NewFS(
 	map[string][]string{
 		"/assets": []string{
-			"/assets/index.html",
+			"css", "images", "index.html",
 		},
 		"/assets/css": []string{
-			"/assets/css/base.css",
+			"base.css",
 		},
 		"/assets/images": []string{
-			"/assets/images/sample.png",
+			"sample.png",
 		},
 	},
 	map[string]*awsset.File{

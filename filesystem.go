@@ -3,6 +3,7 @@ package awsset
 import (
 	"errors"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -52,9 +53,27 @@ func (fs *FileSystem) nameResolute(name string) string {
 
 // ReadFile read file and return []byte like as ioutil.ReadFile
 func (fs *FileSystem) ReadFile(filename string) ([]byte, error) {
-	f, ok := fs.Files[fs.nameResolute(name)]
+	f, ok := fs.Files[fs.nameResolute(filename)]
 	if !ok {
 		return nil, ErrFileNotFound
 	}
 	return f.Data, nil
+}
+
+// ReadDir return all files in specified directory
+func (fs *FileSystem) ReadDir(dirname string) ([]os.FileInfo, error) {
+	dirs, ok := fs.Dirs[dirname]
+	if !ok {
+		return nil, ErrFileNotFound
+	}
+	files := make([]os.FileInfo, 0)
+	for _, dir := range dirs {
+		path := filepath.Join(dirname, dir)
+		file, ok := fs.Files[path]
+		if !ok {
+			continue
+		}
+		files = append(files, file)
+	}
+	return files, nil
 }
