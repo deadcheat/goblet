@@ -39,7 +39,7 @@ var {{ $VarName }} = awsset.NewFS(
 // binary data
 var (
 	{{- range $p := .Paths }}{{ with (index $FileMap $p) }}
-	{{if .Data }}_{{ $VarName }}{{ sha1 $p}} = {{ printf "%s" .Data |  printf "%#v" | safeHTML }}{{ end }}{{ end }}
+	{{if .Data }}_{{ $VarName }}{{ sha1 $p}} = {{ printData .Data }}{{ end }}{{ end }}
 	{{- end }}
 )
 `

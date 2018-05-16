@@ -46,7 +46,8 @@ func (p *Presenter) action(c *cli.Context) error {
 				r := h.Sum(nil)
 				return fmt.Sprintf("%x", r)
 			},
-			"safeHTML": func(s interface{}) template.HTML {
+			"printData": func(b []byte) template.HTML {
+				s := fmt.Sprintf("%#v", string(b))
 				return template.HTML(fmt.Sprint(s))
 			},
 		},
