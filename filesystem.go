@@ -51,6 +51,15 @@ func (fs *FileSystem) nameResolute(name string) string {
 	return name
 }
 
+// File returns file struct
+func (fs *FileSystem) File(filename string) (*File, error) {
+	f, ok := fs.Files[fs.nameResolute(filename)]
+	if !ok {
+		return nil, ErrFileNotFound
+	}
+	return f, nil
+}
+
 // ReadFile read file and return []byte like as ioutil.ReadFile
 func (fs *FileSystem) ReadFile(filename string) ([]byte, error) {
 	f, ok := fs.Files[fs.nameResolute(filename)]
