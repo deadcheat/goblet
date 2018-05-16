@@ -25,7 +25,9 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 
 // LoadFiles load files for given paths, except what matches given ignore path regex
 func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator.Entity, error) {
-	u.rr.CompilePatterns(ignorePatterns)
+	if err := u.rr.CompilePatterns(ignorePatterns); err != nil {
+		return nil, err
+	}
 
 	u.fileMap = make(map[string]*awsset.File)
 	u.validPaths = make([]string, 0)
