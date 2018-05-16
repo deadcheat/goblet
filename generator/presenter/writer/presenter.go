@@ -46,6 +46,9 @@ func (p *Presenter) action(c *cli.Context) error {
 				r := h.Sum(nil)
 				return fmt.Sprintf("%x", r)
 			},
+			"safeHTML": func(s interface{}) template.HTML {
+				return template.HTML(fmt.Sprint(s))
+			},
 		},
 	).Parse(pt.AssetFileTemplate)
 	if err != nil {
