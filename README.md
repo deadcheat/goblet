@@ -5,12 +5,12 @@ library and cmd tools set for managment assets like go-bindata or go-assets
 
 To use asset builder, get all packages.
 ```
-go get github.com/deadcheat/awsset/...
+go get -u github.com/deadcheat/awsset/...
 ```
 
 To only use generated file, get single package
 ```
-go get github.com/deadcheat/awsset
+go get -u github.com/deadcheat/awsset
 ```
 
 ## How to use
