@@ -45,7 +45,7 @@ func (fs *FileSystem) Open(name string) (http.File, error) {
 }
 
 func (fs *FileSystem) nameResolute(name string) string {
-	if name != "" && strings.HasPrefix(name, fs.pathPrefix) {
+	if fs.pathPrefix != "" && strings.HasPrefix(name, fs.pathPrefix) {
 		return filepath.Join("/", strings.TrimPrefix(name, fs.pathPrefix))
 	}
 	return name
