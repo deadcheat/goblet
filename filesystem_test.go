@@ -111,3 +111,22 @@ func TestNameResolute(t *testing.T) {
 		t.Errorf("path FileSystem.nameResolute returned: %s does not equal expected: %s \n", actual, expected)
 	}
 }
+
+func TestExists(t *testing.T) {
+	fs := NewFS(dirs, files)
+	path := "/tmp/test/hoge.txt"
+	actual := fs.Exists(path)
+	expected := true
+
+	if actual != expected {
+		t.Errorf("FileSystem.Exists should return %t but returned %t", expected, actual)
+	}
+
+	path = "/tmp/test/notexists.txt"
+	actual = fs.Exists(path)
+	expected = false
+
+	if actual != expected {
+		t.Errorf("FileSystem.Exists should return %t but returned %t", expected, actual)
+	}
+}
