@@ -146,3 +146,19 @@ func TestFile(t *testing.T) {
 		t.Error("FileSystem.File should return error if path doesn't exist")
 	}
 }
+
+func TestReadFile(t *testing.T) {
+	fs := NewFS(dirs, files)
+	path := "/tmp/test/hoge.txt"
+	result, err := fs.ReadFile(path)
+	if err != nil || result == nil || string(result) != "hogehoge" {
+		t.Error("FileSystem.File should not return error if path exists")
+	}
+
+	path = "/tmp/test/notexists.txt"
+	result, err = fs.ReadFile(path)
+
+	if err == nil || result != nil {
+		t.Error("FileSystem.File should return error if path doesn't exist")
+	}
+}
