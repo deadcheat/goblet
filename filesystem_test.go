@@ -131,19 +131,18 @@ func TestExists(t *testing.T) {
 	}
 }
 
-func TestOpen(t *testing.T) {
+func TestFile(t *testing.T) {
 	fs := NewFS(dirs, files)
 	path := "/tmp/test/hoge.txt"
-	result, err := fs.Open(path)
-
+	result, err := fs.File(path)
 	if err != nil || result == nil {
-		t.Error("FileSystem.Open should not return error if path exists")
+		t.Error("FileSystem.File should not return error if path exists")
 	}
 
 	path = "/tmp/test/notexists.txt"
-	result, err = fs.Open(path)
+	result, err = fs.File(path)
 
 	if err == nil || result != nil {
-		t.Error("FileSystem.Open should return error if path doesn't exist")
+		t.Error("FileSystem.File should return error if path doesn't exist")
 	}
 }
