@@ -35,7 +35,7 @@ var (
 	}
 	dirs = map[string][]string{
 		"/tmp/test": []string{
-			"hoge.png", "fuga.xml",
+			"hoge.txt", "fuga.txt",
 		},
 	}
 )
@@ -173,6 +173,22 @@ func TestReadFile(t *testing.T) {
 
 	path = "/tmp/test/notexists.txt"
 	result, err = fs.ReadFile(path)
+
+	if err == nil || result != nil {
+		t.Error("FileSystem.File should return error if path doesn't exist")
+	}
+}
+
+func TestReadDir(t *testing.T) {
+	fs := NewFS(dirs, files)
+	path := "/tmp/test"
+	result, err := fs.ReadDir(path)
+	if err != nil || result == nil || len(result) != 2 {
+		t.Error("FileSystem.File should not return error if path exists")
+	}
+
+	path = "/tmp/test/notexists"
+	result, err = fs.ReadDir(path)
 
 	if err == nil || result != nil {
 		t.Error("FileSystem.File should return error if path doesn't exist")
