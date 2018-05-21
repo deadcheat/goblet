@@ -37,22 +37,6 @@ func NewFile(p string, d []byte, m os.FileMode, mat time.Time) *File {
 	}
 }
 
-// Close implement for io.Closer
-func (f *File) Close() error {
-	f.buf = nil
-	return nil
-}
-
-// Readdir implement for http.File
-func (f *File) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, nil
-}
-
-// Stat implement for http.File
-func (f *File) Stat() (os.FileInfo, error) {
-	return f, nil
-}
-
 // Name implement for os.FileInfo
 func (f *File) Name() string {
 	return path.Base(f.Path)
@@ -99,4 +83,20 @@ func (f *File) Seek(offset int64, whence int) (int64, error) {
 	}
 
 	return f.buf.Seek(offset, whence)
+}
+
+// Close implement for io.Closer
+func (f *File) Close() error {
+	f.buf = nil
+	return nil
+}
+
+// Readdir implement for http.File
+func (f *File) Readdir(count int) ([]os.FileInfo, error) {
+	return nil, nil
+}
+
+// Stat implement for http.File
+func (f *File) Stat() (os.FileInfo, error) {
+	return f, nil
 }

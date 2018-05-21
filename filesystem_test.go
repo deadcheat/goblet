@@ -35,7 +35,7 @@ var (
 	}
 	dirs = map[string][]string{
 		"/tmp/test": []string{
-			"hoge.txt", "fuga.txt",
+			"hoge.txt", "fuga.txt", "not_exists.png",
 		},
 	}
 )
