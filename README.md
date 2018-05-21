@@ -1,4 +1,7 @@
 # awsset
+
+[![Build Status](https://travis-ci.org/deadcheat/awsset.svg?branch=master)](https://travis-ci.org/deadcheat/awsset) [![Coverage Status](https://coveralls.io/repos/github/deadcheat/awsset/badge.svg?branch=master&service=github)](https://coveralls.io/github/deadcheat/awsset?branch=master&service=github) [![GoDoc](https://godoc.org/github.com/deadcheat/awsset?status.svg)](https://godoc.org/github.com/deadcheat/awsset)
+
 library and cmd tools set for managment assets like go-bindata or go-assets
 
 ## install
