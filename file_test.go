@@ -56,3 +56,29 @@ func TestNewFile(t *testing.T) {
 	}
 
 }
+
+func TestAsFileInfo(t *testing.T) {
+	contentStr := "hello world!"
+	content := []byte(contentStr)
+	fileName := "temp.txt"
+	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir) // clean up
+	fi, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var f os.FileInfo
+	f = NewFile(path, content, fi.Mode(), fi.ModTime())
+
+	if f.Name() != fileName ||
+		f.Size() != int64(len(content)) ||
+		f.Mode() != fi.Mode() ||
+		f.ModTime() != fi.ModTime() ||
+		f.IsDir() ||
+		f.Sys() != nil {
+		t.Errorf("NewFromFileInfo returned unexpected File %#v", f)
+	}
+}
