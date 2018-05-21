@@ -1,0 +1,15 @@
+language: go
+go:
+    - "1.10"
+go_import_path: github.com/deadcheat/awsset
+before_install:
+    - go get -v -u github.com/modocache/gover
+    - go get -v -u github.com/mattn/goveralls
+    - go get -v -u golang.org/x/tools/cmd/cover
+    - go get -v -u github.com/Masterminds/glide
+install:
+    - $GOPATH/bin/glide install
+script:
+    - go test -coverprofile=awsset.coverprofile
+    - $HOME/gopath/bin/gover
+    - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci
