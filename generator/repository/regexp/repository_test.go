@@ -27,6 +27,11 @@ func TestCompilePatterns(t *testing.T) {
 
 func TestMatchAny(t *testing.T) {
 	rep := New()
+	// No patterns
+	if !rep.MatchAny("anything ok") {
+		t.Error("if there are not any specified pattern func should return always true")
+	}
+
 	// Success pattern
 	err := rep.CompilePatterns([]string{
 		`^[a-z0-9]+\.html$`,

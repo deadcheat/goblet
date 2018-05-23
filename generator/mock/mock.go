@@ -5,6 +5,7 @@
 package mock
 
 import (
+	generator "github.com/deadcheat/awsset/generator"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -33,9 +34,9 @@ func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
 }
 
 // LoadFiles mocks base method
-func (m *MockUseCase) LoadFiles(paths, ignorePatterns []string) (*Entity, error) {
+func (m *MockUseCase) LoadFiles(paths, ignorePatterns []string) (*generator.Entity, error) {
 	ret := m.ctrl.Call(m, "LoadFiles", paths, ignorePatterns)
-	ret0, _ := ret[0].(*Entity)
+	ret0, _ := ret[0].(*generator.Entity)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

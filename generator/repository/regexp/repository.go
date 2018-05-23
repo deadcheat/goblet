@@ -30,9 +30,13 @@ func (r *Repository) CompilePatterns(patterns []string) error {
 }
 
 // MatchAny check regexp slices if path matches anyone
-func (r *Repository) MatchAny(path string) bool {
-	for i := range r.r {
-		regexp := r.r[i]
+func (re *Repository) MatchAny(path string) bool {
+	// if no patterns are compiled, return true
+	if len(re.r) == 0 {
+		return true
+	}
+	for i := range re.r {
+		regexp := re.r[i]
 		if regexp != nil && regexp.MatchString(path) {
 			return true
 		}

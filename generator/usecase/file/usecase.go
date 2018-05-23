@@ -1,6 +1,7 @@
 package file
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -8,6 +9,10 @@ import (
 
 	"github.com/deadcheat/awsset"
 	"github.com/deadcheat/awsset/generator"
+)
+
+var (
+	ErrFileIsNotMatchExpression = errors.New("file path does not match specified pattern")
 )
 
 // UseCase file usecase
@@ -20,7 +25,16 @@ type UseCase struct {
 
 // New return new UseCase
 func New(rr generator.RegexpRepository) generator.UseCase {
-	return &UseCase{rr: rr}
+
+	fileMap := make(map[string]*awsset.File)
+	validPaths := make([]string, 0)
+	dirMap := make(map[string][]string)
+	return &UseCase{
+		rr:         rr,
+		fileMap:    fileMap,
+		validPaths: validPaths,
+		dirMap:     dirMap,
+	}
 }
 
 // LoadFiles load files for given paths, except what matches given ignore path regex
@@ -29,9 +43,6 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 		return nil, err
 	}
 
-	u.fileMap = make(map[string]*awsset.File)
-	u.validPaths = make([]string, 0)
-	u.dirMap = make(map[string][]string)
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
@@ -49,8 +60,8 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 
 func (u *UseCase) addFile(path string) (err error) {
 	vPath := filepath.Join("/", path)
-	if u.rr.MatchAny(path) {
-		return nil
+	if !u.rr.MatchAny(path) {
+		return ErrFileIsNotMatchExpression
 	}
 	fi, err := os.Stat(path)
 	if err != nil {

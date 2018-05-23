@@ -16,12 +16,12 @@ func main() {
 
 	app.Name = "awsset"
 	app.Usage = "make a binary contain some assets"
-	app.Version = "0.1.0"
+	app.Version = "0.2.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringSliceFlag{
-			Name:  "except, e",
-			Usage: "Regular expressions you want files to ignore",
+			Name:  "expression, e",
+			Usage: "Regular expressions you want files to contain",
 		},
 		cli.StringFlag{
 			Name:  "out, o",
@@ -33,7 +33,7 @@ func main() {
 			Usage: "Package name for output",
 		},
 		cli.StringFlag{
-			Name:  "var, t",
+			Name:  "name, n",
 			Value: "Assets",
 			Usage: "Variable name for output assets",
 		},
