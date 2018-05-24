@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestAddFile(t *testing.T) {
+func TestAddFile_ForSingleFiles(t *testing.T) {
 	// Prepare dir and file
 	contentStr := "hello world!"
 	dir, path, _ := createTempDirAndFile("temp.txt", contentStr)
@@ -25,14 +25,13 @@ func TestAddFile(t *testing.T) {
 	m.EXPECT().MatchAny(path).Return(true)
 	// should not be contained
 	wrongPath := filepath.Join(dir, "doesnotmatch.txt")
-	if err := ioutil.WriteFile(wrongPath, []byte("test"), 0666); err != nil {
-		panic(err)
-	}
+	ioutil.WriteFile(wrongPath, []byte("test"), 0666)
 	m.EXPECT().MatchAny(wrongPath).Return(false)
 	// file can not be opened
 	closedPath := filepath.Join(dir, "closed.txt")
 	ioutil.WriteFile(closedPath, []byte(""), 0000)
 	m.EXPECT().MatchAny(closedPath).Return(true)
+
 	// create usecase
 	iu := New(m)
 
