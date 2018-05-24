@@ -5,7 +5,7 @@
 package mock
 
 import (
-	generator "github.com/deadcheat/awsset/generator"
+	generator "github.com/deadcheat/goblet/generator"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )

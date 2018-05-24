@@ -1,13 +1,13 @@
 package generator
 
 import (
-	"github.com/deadcheat/awsset"
+	"github.com/deadcheat/goblet"
 )
 
 // Entity generator entity
 type Entity struct {
 	DirMap  map[string][]string
-	FileMap map[string]*awsset.File
+	FileMap map[string]*goblet.File
 	Paths   []string
 }
 

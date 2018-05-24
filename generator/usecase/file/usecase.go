@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/deadcheat/awsset"
-	"github.com/deadcheat/awsset/generator"
+	"github.com/deadcheat/goblet"
+	"github.com/deadcheat/goblet/generator"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 // UseCase file usecase
 type UseCase struct {
 	rr         generator.RegexpRepository
-	fileMap    map[string]*awsset.File
+	fileMap    map[string]*goblet.File
 	dirMap     map[string][]string
 	validPaths []string
 }
@@ -26,7 +26,7 @@ type UseCase struct {
 // New return new UseCase
 func New(rr generator.RegexpRepository) generator.UseCase {
 
-	fileMap := make(map[string]*awsset.File)
+	fileMap := make(map[string]*goblet.File)
 	validPaths := make([]string, 0)
 	dirMap := make(map[string][]string)
 	return &UseCase{
@@ -89,14 +89,14 @@ func (u *UseCase) addFile(path string) (err error) {
 			children = append(children, filepath.Base(childPath))
 		}
 		u.dirMap[vPath] = children
-		d := awsset.NewFromFileInfo(fi, vPath, nil)
+		d := goblet.NewFromFileInfo(fi, vPath, nil)
 		u.fileMap[vPath] = d
 	} else {
 		data, err := ioutil.ReadFile(path)
 		if err != nil {
 			log.Fatal(err)
 		}
-		file := awsset.NewFromFileInfo(fi, vPath, data)
+		file := goblet.NewFromFileInfo(fi, vPath, data)
 		u.fileMap[vPath] = file
 	}
 	return nil

@@ -3,7 +3,7 @@ package regexp
 import (
 	"regexp"
 
-	"github.com/deadcheat/awsset/generator"
+	"github.com/deadcheat/goblet/generator"
 )
 
 type Repository struct {

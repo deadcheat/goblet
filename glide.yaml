@@ -1,4 +1,4 @@
-package: github.com/deadcheat/awsset
+package: github.com/deadcheat/goblet
 import:
 - package: github.com/urfave/cli
   version: ^1.20.0

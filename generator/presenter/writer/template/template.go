@@ -1,13 +1,13 @@
 package template
 
-import "github.com/deadcheat/awsset"
+import "github.com/deadcheat/goblet"
 
 // Assets struct for assign values to template
 type Assets struct {
 	PackageName string
 	VarName     string
 	DirMap      map[string][]string
-	FileMap     map[string]*awsset.File
+	FileMap     map[string]*goblet.File
 	Paths       []string
 }
 
@@ -17,11 +17,11 @@ var AssetFileTemplate = `package {{.PackageName}}
 import(
 	"time"
 
-	"github.com/deadcheat/awsset"
+	"github.com/deadcheat/goblet"
 )
 {{ $FileMap := .FileMap}}{{ $DirMap := .DirMap}}{{ $VarName := .VarName }}
 // {{ $VarName }} a generated file system
-var {{ $VarName }} = awsset.NewFS(
+var {{ $VarName }} = goblet.NewFS(
 	map[string][]string{
 		{{- range $p := .Paths }}{{ with (index $DirMap $p)}}
 		"{{ $p }}": []string{
@@ -29,9 +29,9 @@ var {{ $VarName }} = awsset.NewFS(
 		},{{ end }}
 		{{- end }}
 	},
-	map[string]*awsset.File {
+	map[string]*goblet.File {
 		{{- range $p := .Paths }}{{ with (index $FileMap $p)}}
-		"{{$p}}": awsset.NewFile("{{$p}}", {{if not .Data }}nil{{ else }}[]byte(_{{ $VarName }}{{ sha1 $p }}){{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
+		"{{$p}}": goblet.NewFile("{{$p}}", {{if not .Data }}nil{{ else }}[]byte(_{{ $VarName }}{{ sha1 $p }}){{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
 		{{- end }}
 	},
 )

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/deadcheat/awsset/generator/mock"
+	"github.com/deadcheat/goblet/generator/mock"
 	"github.com/golang/mock/gomock"
 )
 

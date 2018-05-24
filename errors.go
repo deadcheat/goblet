@@ -1,4 +1,4 @@
-package awsset
+package goblet
 
 import "errors"
 

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/deadcheat/awsset/examples/http/assetsbin"
+	"github.com/deadcheat/goblet/examples/http/assetsbin"
 )
 
 func main() {

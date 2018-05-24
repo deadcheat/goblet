@@ -1,6 +1,6 @@
-# awsset
+# goblet
 
-[![Build Status](https://travis-ci.org/deadcheat/awsset.svg?branch=master)](https://travis-ci.org/deadcheat/awsset) [![Coverage Status](https://coveralls.io/repos/github/deadcheat/awsset/badge.svg?branch=master&service=github)](https://coveralls.io/github/deadcheat/awsset?branch=master&service=github) [![GoDoc](https://godoc.org/github.com/deadcheat/awsset?status.svg)](https://godoc.org/github.com/deadcheat/awsset)
+[![Build Status](https://travis-ci.org/deadcheat/goblet.svg?branch=master)](https://travis-ci.org/deadcheat/goblet) [![Coverage Status](https://coveralls.io/repos/github/deadcheat/goblet/badge.svg?branch=master&service=github)](https://coveralls.io/github/deadcheat/goblet?branch=master&service=github) [![GoDoc](https://godoc.org/github.com/deadcheat/goblet?status.svg)](https://godoc.org/github.com/deadcheat/goblet)
 
 library and cmd tools set for managment assets like go-bindata or go-assets
 
@@ -8,24 +8,24 @@ library and cmd tools set for managment assets like go-bindata or go-assets
 
 To use asset builder, get all packages.
 ```
-go get -u github.com/deadcheat/awsset/...
+go get -u github.com/deadcheat/goblet/...
 ```
 
 To only use generated file, get single package
 ```
-go get -u github.com/deadcheat/awsset
+go get -u github.com/deadcheat/goblet
 ```
 
 ## How to use
 
-On command-line, awsset acts as asset builder like as go-assets-builder or go-bindata
+On command-line, goblet acts as asset builder like as go-assets-builder or go-bindata
 ```
-> awsset -h 
+> goblet -h
 NAME:
-   awsset - make a binary contain some assets
+   goblet - make a binary contain some assets
 
 USAGE:
-   main [global options] command [command options] [arguments...]
+   goblet [global options] command [command options] [arguments...]
 
 VERSION:
    0.2.0
@@ -57,7 +57,7 @@ Generated asset is generated as implementation of http.FileSystem
 ```
 
 Sometimes we changed root on http request from "/" such as "/statics/",
-awsset.FileSystem has `WithPrefix` func.
+goblet.FileSystem has `WithPrefix` func.
 ```
 	http.Handle("/static/", http.FileServer(assetsbin.Assets.WithPrefix("/static/")))
 	log.Println("start server localhost:3000")
@@ -67,7 +67,7 @@ awsset.FileSystem has `WithPrefix` func.
 ```
 
 ### reading config file with config library like [github.com/spf13/viper](https://github.com/spf13/viper)
-awsset.File has bytes.Reader, so you can use awsset.File directly
+goblet.File has bytes.Reader, so you can use goblet.File directly
 ```
 	viper.SetConfigType("toml")
 	f, _ := configbin.Assets.File("/config/configfile.toml")

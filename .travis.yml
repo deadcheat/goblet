@@ -1,7 +1,7 @@
 language: go
 go:
     - "1.10"
-go_import_path: github.com/deadcheat/awsset
+go_import_path: github.com/deadcheat/goblet
 before_install:
     - go get -v -u github.com/modocache/gover
     - go get -v -u github.com/mattn/goveralls
@@ -10,6 +10,6 @@ before_install:
 install:
     - $GOPATH/bin/glide install
 script:
-    - go test -coverprofile=awsset.coverprofile
+    - go test -coverprofile=goblet.coverprofile
     - $HOME/gopath/bin/gover
     - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci

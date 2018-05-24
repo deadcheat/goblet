@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	gpf "github.com/deadcheat/awsset/generator/presenter/writer"
-	grr "github.com/deadcheat/awsset/generator/repository/regexp"
-	guf "github.com/deadcheat/awsset/generator/usecase/file"
+	gpf "github.com/deadcheat/goblet/generator/presenter/writer"
+	grr "github.com/deadcheat/goblet/generator/repository/regexp"
+	guf "github.com/deadcheat/goblet/generator/usecase/file"
 
 	"github.com/urfave/cli"
 )
@@ -14,7 +14,7 @@ import (
 func main() {
 	app := cli.NewApp()
 
-	app.Name = "awsset"
+	app.Name = "goblet"
 	app.Usage = "make a binary contain some assets"
 	app.Version = "0.2.0"
 

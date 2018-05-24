@@ -11,8 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/deadcheat/awsset/generator"
-	pt "github.com/deadcheat/awsset/generator/presenter/writer/template"
+	"github.com/deadcheat/goblet/generator"
+	pt "github.com/deadcheat/goblet/generator/presenter/writer/template"
 	"github.com/urfave/cli"
 )
 

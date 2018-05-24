@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/deadcheat/awsset/examples/viper/configbin"
+	"github.com/deadcheat/goblet/examples/viper/configbin"
 	"github.com/spf13/viper"
 )
 
