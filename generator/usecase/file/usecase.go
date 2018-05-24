@@ -3,7 +3,6 @@ package file
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -60,44 +59,45 @@ func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator
 
 func (u *UseCase) addFile(path string) (err error) {
 	vPath := filepath.Join("/", path)
-	if !u.rr.MatchAny(path) {
-		return ErrFileIsNotMatchExpression
-	}
 	fi, err := os.Stat(path)
 	if err != nil {
 		return err
 	}
 	u.validPaths = append(u.validPaths, vPath)
-	if fi.IsDir() {
-		children := u.dirMap[vPath]
-		if children == nil {
-			children = make([]string, 0)
+	if !fi.IsDir() {
+		if !u.rr.MatchAny(path) {
+			return ErrFileIsNotMatchExpression
 		}
-		var files []os.FileInfo
-		files, err = ioutil.ReadDir(path)
+		var data []byte
+		data, err = ioutil.ReadFile(path)
 		if err != nil {
-			log.Fatal(err)
-		}
-		// add files recursively in dir
-		for i := range files {
-			f := files[i]
-			childPath := filepath.Join(path, f.Name())
-			err = u.addFile(childPath)
-			if err != nil {
-				return err
-			}
-			children = append(children, filepath.Base(childPath))
-		}
-		u.dirMap[vPath] = children
-		d := goblet.NewFromFileInfo(fi, vPath, nil)
-		u.fileMap[vPath] = d
-	} else {
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		file := goblet.NewFromFileInfo(fi, vPath, data)
 		u.fileMap[vPath] = file
+		return nil
 	}
+	children := u.dirMap[vPath]
+	if children == nil {
+		children = make([]string, 0)
+	}
+	var files []os.FileInfo
+	files, err = ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+	// add files recursively in dir
+	for i := range files {
+		f := files[i]
+		childPath := filepath.Join(path, f.Name())
+		err = u.addFile(childPath)
+		if err != nil {
+			return err
+		}
+		children = append(children, filepath.Base(childPath))
+	}
+	u.dirMap[vPath] = children
+	d := goblet.NewFromFileInfo(fi, vPath, nil)
+	u.fileMap[vPath] = d
 	return nil
 }

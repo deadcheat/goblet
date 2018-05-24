@@ -13,7 +13,7 @@ import (
 func TestAddFile(t *testing.T) {
 	// Prepare dir and file
 	contentStr := "hello world!"
-	dir, path, err := createTempDirAndFile("temp.txt", contentStr)
+	dir, path, _ := createTempDirAndFile("temp.txt", contentStr)
 	defer os.RemoveAll(dir) // clean up
 
 	// Prepare mock
@@ -21,15 +21,40 @@ func TestAddFile(t *testing.T) {
 	defer c.Finish()
 
 	m := mock.NewMockRegexpRepository(c)
+	// successfull pattern
 	m.EXPECT().MatchAny(path).Return(true)
+	// should not be contained
+	wrongPath := filepath.Join(dir, "doesnotmatch.txt")
+	if err := ioutil.WriteFile(wrongPath, []byte("test"), 0666); err != nil {
+		panic(err)
+	}
+	m.EXPECT().MatchAny(wrongPath).Return(false)
+	// file can not be opened
+	closedPath := filepath.Join(dir, "closed.txt")
+	ioutil.WriteFile(closedPath, []byte(""), 0000)
+	m.EXPECT().MatchAny(closedPath).Return(true)
 	// create usecase
 	iu := New(m)
 
 	u := iu.(*UseCase)
 	// success pattern
-	err = u.addFile(path)
+	err := u.addFile(path)
 	if err != nil {
 		t.Error("addFile should not return any errors", err)
+	}
+	err = u.addFile(wrongPath)
+	if err != ErrFileIsNotMatchExpression {
+		t.Error("addFile should return ErrFileIsNotMatchExpression but returned ", err)
+	}
+	// filename does not exist
+	brokenPath := filepath.Join(dir, "/this/is/match/but/broken.txt")
+	err = u.addFile(brokenPath)
+	if err == nil {
+		t.Error("addFile should return some error")
+	}
+	err = u.addFile(closedPath)
+	if err == nil {
+		t.Error("addFile should return some error")
 	}
 }
 
