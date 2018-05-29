@@ -2,58 +2,55 @@ package goblet
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"testing"
+
+	"github.com/deadcheat/gonch"
 )
-
-func createTempDirAndFile(fileName, content string) (dir, path string, err error) {
-	dir, err = ioutil.TempDir("", "tmpdir")
-	if err != nil {
-		return
-	}
-
-	path = filepath.Join(dir, fileName)
-	if err = ioutil.WriteFile(path, []byte(content), 0666); err != nil {
-		return
-	}
-	return
-}
 
 func TestNewFromFileInfo(t *testing.T) {
 	contentStr := "hello world!"
-	dir, path, err := createTempDirAndFile("temp.txt", contentStr)
+	content := []byte(contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", "temp.txt", content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	f := NewFromFileInfo(fi, path, []byte(contentStr))
-	if f.Path != path || string(f.Data) != contentStr {
+	f := NewFromFileInfo(fi, tf.Path, content)
+	if f.Path != tf.Path || string(f.Data) != contentStr {
 		t.Errorf("NewFromFileInfo returned unexpected File %#v", f)
 	}
 }
 
 func TestNewFile(t *testing.T) {
 	contentStr := "hello world!"
-	dir, path, err := createTempDirAndFile("temp.txt", contentStr)
+	content := []byte(contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", "temp.txt", content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	f := NewFile(path, []byte(contentStr), fi.Mode(), fi.ModTime())
-	if f == nil || f.Path != path || string(f.Data) != contentStr {
+	f := NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
+	if f == nil || f.Path != tf.Path || string(f.Data) != contentStr {
 		t.Errorf("NewFromFileInfo returned unexpected File %#v", f)
 	}
 
@@ -63,16 +60,20 @@ func TestAsFileInfo(t *testing.T) {
 	contentStr := "hello world!"
 	content := []byte(contentStr)
 	fileName := "temp.txt"
-	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", fileName, content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var f os.FileInfo = NewFile(path, content, fi.Mode(), fi.ModTime())
+	var f os.FileInfo = NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
 
 	if f.Name() != fileName ||
 		f.Size() != int64(len(content)) ||
@@ -87,17 +88,20 @@ func TestAsFileInfo(t *testing.T) {
 func TestReaddir(t *testing.T) {
 	contentStr := "hello world!"
 	content := []byte(contentStr)
-	fileName := "temp.txt"
-	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", "temp.txt", content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var f http.File = NewFile(path, content, fi.Mode(), fi.ModTime())
+	var f http.File = NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
 	files, err := f.Readdir(1)
 	if files != nil || err != nil {
 		t.Errorf("File maybe an unexpected File %#v", f)
@@ -108,16 +112,20 @@ func TestReadAndClose(t *testing.T) {
 	contentStr := "hello world!"
 	content := []byte(contentStr)
 	fileName := "temp.txt"
-	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", fileName, content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var f http.File = NewFile(path, content, fi.Mode(), fi.ModTime())
+	var f http.File = NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
 	readContent := make([]byte, len(content))
 	n, err := f.Read(readContent)
 	actualFile, ok := f.(*File)
@@ -134,16 +142,20 @@ func TestStat(t *testing.T) {
 	contentStr := "hello world!"
 	content := []byte(contentStr)
 	fileName := "temp.txt"
-	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", fileName, content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var f http.File = NewFile(path, content, fi.Mode(), fi.ModTime())
+	var f http.File = NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
 
 	statFi, err := f.Stat()
 	if err != nil || statFi.Name() != fi.Name() {
@@ -155,16 +167,20 @@ func TestSeek(t *testing.T) {
 	contentStr := "hello world!"
 	content := []byte(contentStr)
 	fileName := "temp.txt"
-	dir, path, err := createTempDirAndFile(fileName, contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close()
+	if err := d.AddFile("testfile", fileName, content, 0666); err != nil {
+		t.Fatal(err)
+	}
+	tf, err := d.File("testfile")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir) // clean up
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(tf.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var f http.File = NewFile(path, content, fi.Mode(), fi.ModTime())
+	var f http.File = NewFile(tf.Path, content, fi.Mode(), fi.ModTime())
 
 	offset := int64(6)
 	expectedLen := 6

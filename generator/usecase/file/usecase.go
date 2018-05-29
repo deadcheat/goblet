@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	// ErrFileIsNotMatchExpression return when regexp doesn't match specified name
 	ErrFileIsNotMatchExpression = errors.New("file path does not match specified pattern")
 )
 
