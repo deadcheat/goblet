@@ -1,6 +1,8 @@
-hash: 73c147dbccb7fca39ba44597f3ca0cadbecee791d6c1983740bd8da5f9712bb1
-updated: 2018-05-24T01:08:37.34554+09:00
+hash: 9ead83b4c88156be79afde14b796367f1ecc713898eb992fddfa6599417a6b4d
+updated: 2018-05-29T20:44:35.243359+09:00
 imports:
+- name: github.com/deadcheat/gonch
+  version: c2ff7a0198634059c75ededb1cb4eb6ffa6df7ca
 - name: github.com/fsnotify/fsnotify
   version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
 - name: github.com/golang/mock
@@ -20,9 +22,9 @@ imports:
   - json/scanner
   - json/token
 - name: github.com/magiconair/properties
-  version: c2353362d570a7bfa228149c62842019201cfb71
+  version: 2c9e9502788518c97fe44e8955cd069417ee89df
 - name: github.com/mitchellh/mapstructure
-  version: bb74f1db0675b241733089d5a1faa5dd8b0ef57b
+  version: 00c29f56e2386353d58c599509e8dc3801b0d716
 - name: github.com/pelletier/go-toml
   version: 66540cf1fcd2c3aee6f6787dfa32a6ae9a870f12
 - name: github.com/spf13/afero
@@ -34,24 +36,24 @@ imports:
 - name: github.com/spf13/jwalterweatherman
   version: 7c0cea34c8ece3fbeb2b27ab9b59511d360fb394
 - name: github.com/spf13/pflag
-  version: 583c0c0531f06d5278b7d917446061adc344b5cd
+  version: 1ce0cc6db4029d97571db82f85092fccedb572ce
 - name: github.com/spf13/viper
-  version: 15738813a09db5c8e5b60a19d67d3f9bd38da3a4
+  version: b5e8006cbee93ec955a89ab31e0e3ce3204f3736
 - name: github.com/urfave/cli
   version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
 - name: golang.org/x/net
-  version: 9ef9f5bb98a1fdc41f8cf6c250a4404b4085e389
+  version: b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 91ee8cde435411ca3f1cd365e8f20131aed4d0a1
+  version: 1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 5c1cf69b5978e5a34c5f9ba09a83e56acc4b7877
+  version: 2cb43934f0eece38629746959acc633cba083fe4
   subpackages:
   - transform
   - unicode/norm
 - name: gopkg.in/yaml.v2
-  version: 86f5ed62f8a0ee96bd888d2efdfd6d4fb100a4eb
+  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
 testImports: []
