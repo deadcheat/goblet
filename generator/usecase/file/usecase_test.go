@@ -1,6 +1,7 @@
 package file
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,6 +12,94 @@ import (
 	"github.com/deadcheat/goblet/generator/mock"
 	"github.com/golang/mock/gomock"
 )
+
+func TestLoadFilesSuccess(t *testing.T) {
+	// Prepare dir and file
+	contentStr := "hello world!"
+	content := []byte(contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close() // clean up
+
+	// Prepare mock
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	m := mock.NewMockRegexpRepository(c)
+	// successfull pattern
+	filenameSuccess := "success.txt"
+	path := filepath.Join(d.Dir(), filenameSuccess)
+	d.AddFile("success", filenameSuccess, content, 0666)
+	m.EXPECT().MatchAny(path).Return(true)
+
+	// add Expects for CompilePatterns
+	emptyPatterns := make([]string, 0)
+	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+
+	// create usecase
+	iu := New(m)
+
+	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	if err != nil {
+		t.Error("addFile should not return any errors", err)
+	}
+}
+
+func TestLoadFilesErrorCompile(t *testing.T) {
+	// Prepare dir and file
+	d := gonch.New("", "tmpdir")
+	defer d.Close() // clean up
+
+	// Prepare mock
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	m := mock.NewMockRegexpRepository(c)
+
+	// add Expects for CompilePatterns
+	emptyPatterns := make([]string, 0)
+	dummyError := errors.New("dummy")
+	m.EXPECT().CompilePatterns(emptyPatterns).Return(dummyError)
+
+	// create usecase
+	iu := New(m)
+
+	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	if err == nil {
+		t.Error("addFile should return error")
+	}
+}
+
+func TestLoadFilesErrorAddFile(t *testing.T) {
+	// Prepare dir and file
+	contentStr := "hello world!"
+	content := []byte(contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close() // clean up
+
+	// Prepare mock
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	m := mock.NewMockRegexpRepository(c)
+
+	// should not be contained
+	fileWrongPath := "doesnotmatch.txt"
+	wrongPath := filepath.Join(d.Dir(), fileWrongPath)
+	d.AddFile("wrong path file", fileWrongPath, content, 0666)
+	m.EXPECT().MatchAny(wrongPath).Return(false)
+
+	// add Expects for CompilePatterns
+	emptyPatterns := make([]string, 0)
+	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+
+	// create usecase
+	iu := New(m)
+
+	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	if err == nil {
+		t.Error("addFile should return error")
+	}
+}
 
 func TestAddFileForSingleFiles(t *testing.T) {
 	// Prepare dir and file
