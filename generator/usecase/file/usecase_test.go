@@ -189,7 +189,9 @@ func TestAddFileForDirectory(t *testing.T) {
 	}
 	deniedFile := filepath.Join(permittedDir, "permitted_denied.txt")
 	deniedFilePath := filepath.Join(d.Dir(), deniedFile)
-	err := d.AddFile("permitted_denied", deniedFile, content, 0000)
+	if err := d.AddFile("permitted_denied", deniedFile, content, 0000); err != nil {
+		panic(err)
+	}
 	m.EXPECT().MatchAny(deniedFilePath).Return(true)
 
 	// create usecase
@@ -198,20 +200,17 @@ func TestAddFileForDirectory(t *testing.T) {
 
 	// success pattern
 	targetDir := filepath.Join(d.Dir(), "/child")
-	err = u.addFile(targetDir)
-	if err != nil {
+	if err := u.addFile(targetDir); err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
 
 	// when directory is not permittedf
-	err = u.addFile(filepath.Join(d.Dir(), deniedDir))
-	if err == nil {
+	if err := u.addFile(filepath.Join(d.Dir(), deniedDir)); err == nil {
 		t.Error("addFile should return any error when dir is denied")
 	}
 
 	// when file in dir is permitted
-	err = u.addFile(filepath.Join(d.Dir(), permittedDir))
-	if err == nil {
+	if err := u.addFile(filepath.Join(d.Dir(), permittedDir)); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
 	}
 }
