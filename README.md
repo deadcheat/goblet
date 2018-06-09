@@ -43,7 +43,7 @@ GLOBAL OPTIONS:
 ```
 
 ## Examples
-see example dir for full of codes.
+see [example repo](https://github.com/deadcheat/goblet_examples) dir for full of codes.
 
 ### http static file
 
