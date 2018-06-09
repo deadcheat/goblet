@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	gpf "github.com/deadcheat/goblet/generator/presenter/writer"
+	gpf "github.com/deadcheat/goblet/generator/presenter/file"
 	grr "github.com/deadcheat/goblet/generator/repository/regexp"
 	guf "github.com/deadcheat/goblet/generator/usecase/file"
 

@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 
 	"github.com/deadcheat/goblet/generator"
-	pt "github.com/deadcheat/goblet/generator/presenter/writer/template"
+	pt "github.com/deadcheat/goblet/generator/presenter/file/template"
 	"github.com/urfave/cli"
 )
 
