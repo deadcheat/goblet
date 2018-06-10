@@ -28,9 +28,11 @@ func New(u generator.UseCase) *Presenter {
 	}
 }
 
+var ErrNoArguments = errors.New("Please specify the argument")
+
 func (p *Presenter) action(c *cli.Context) error {
 	if c.NArg() == 0 {
-		return errors.New("Please specify the argument")
+		return ErrNoArguments
 	}
 	paths := append([]string{c.Args().First()}, c.Args().Tail()...)
 	ignores := c.StringSlice("except")
@@ -69,6 +71,9 @@ func (p *Presenter) action(c *cli.Context) error {
 
 	// gofmt
 	formatted, err := format.Source(b.Bytes())
+	if err != nil {
+		return err
+	}
 
 	var writer io.Writer = os.Stdout
 	outName := c.String("out")
