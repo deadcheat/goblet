@@ -88,11 +88,13 @@ func (p *Presenter) action(c *cli.Context) error {
 	return nil
 }
 
+var ErrIllegalMount = errors.New("illegal Mount() call")
+
 // Mount action
 func (p *Presenter) Mount(i interface{}) error {
 	c, ok := i.(*cli.App)
 	if !ok {
-		panic(errors.New("illegal Mount() call"))
+		return ErrIllegalMount
 	}
 	c.Action = p.action
 	return nil
