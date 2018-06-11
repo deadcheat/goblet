@@ -61,7 +61,7 @@ func (p *Presenter) action(c *cli.Context) error {
 	var b bytes.Buffer
 	if err = t.Execute(&b, &pt.Assets{
 		PackageName: c.String("package"),
-		VarName:     c.String("var"),
+		VarName:     c.String("name"),
 		DirMap:      e.DirMap,
 		FileMap:     e.FileMap,
 		Paths:       e.Paths,
