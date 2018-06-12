@@ -40,7 +40,7 @@ func (p *Presenter) action(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	t, err := template.New("asset").Funcs(
+	t, _ := template.New("asset").Funcs(
 		template.FuncMap{
 			"sha1": func(s string) string {
 				h := sha1.New()
@@ -54,20 +54,15 @@ func (p *Presenter) action(c *cli.Context) error {
 			},
 		},
 	).Parse(pt.AssetFileTemplate)
-	if err != nil {
-		return err
-	}
 
 	var b bytes.Buffer
-	if err = t.Execute(&b, &pt.Assets{
+	_ = t.Execute(&b, &pt.Assets{
 		PackageName: c.String("package"),
 		VarName:     c.String("name"),
 		DirMap:      e.DirMap,
 		FileMap:     e.FileMap,
 		Paths:       e.Paths,
-	}); err != nil {
-		return err
-	}
+	})
 
 	// gofmt
 	formatted, err := format.Source(b.Bytes())

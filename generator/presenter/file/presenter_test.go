@@ -5,6 +5,7 @@ import (
 	"flag"
 	"testing"
 
+	"github.com/deadcheat/goblet/generator"
 	"github.com/deadcheat/goblet/generator/mock"
 	"github.com/deadcheat/goblet/generator/values"
 	"github.com/golang/mock/gomock"
@@ -73,6 +74,30 @@ func TestActionFailLoadFiles(t *testing.T) {
 	a.Flags = values.FlagDefs
 	ctx := cli.NewContext(a, set, nil)
 	if err := p.action(ctx); err != errTest {
+		t.Error("Mount should return errTest", err)
+	}
+}
+
+func TestActionFailGoformat(t *testing.T) {
+
+	// Prepare mock
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	m := mock.NewMockUseCase(c)
+	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(&generator.Entity{FileMap: nil}, nil)
+
+	p := New(m)
+	a := &cli.App{}
+	p.Mount(a)
+	set := flag.NewFlagSet("test", flag.ContinueOnError)
+	if err := set.Parse([]string{"config"}); err != nil {
+		panic(err)
+	}
+
+	a.Flags = values.FlagDefs
+	ctx := cli.NewContext(a, set, nil)
+	if err := p.action(ctx); err == nil {
 		t.Error("Mount should return errTest", err)
 	}
 }
