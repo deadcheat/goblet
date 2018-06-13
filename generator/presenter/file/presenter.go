@@ -82,9 +82,7 @@ func (p *Presenter) action(c *cli.Context) error {
 		defer f.Close()
 		writer = f
 	}
-	if _, err = fmt.Fprintln(writer, string(formatted)); err != nil {
-		return err
-	}
+	fmt.Fprintln(writer, string(formatted))
 	return nil
 }
 
