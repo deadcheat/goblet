@@ -18,14 +18,14 @@ func New() generator.RegexpRepository {
 
 // CompilePatterns compile patterns
 func (r *Repository) CompilePatterns(patterns []string) error {
-	r.r = make([]*regexp.Regexp, len(patterns))
+	r.rs = make([]*regexp.Regexp, len(patterns))
 	for i := range patterns {
 		pattern := patterns[i]
 		reg, err := regexp.Compile(pattern)
 		if err != nil {
 			return err
 		}
-		r.r[i] = reg
+		r.rs[i] = reg
 	}
 	return nil
 }

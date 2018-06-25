@@ -1,6 +1,6 @@
 # goblet
 
-[![Build Status](https://travis-ci.org/deadcheat/goblet.svg?branch=master)](https://travis-ci.org/deadcheat/goblet) [![Coverage Status](https://coveralls.io/repos/github/deadcheat/goblet/badge.svg?branch=master&service=github)](https://coveralls.io/github/deadcheat/goblet?branch=master&service=github) [![GoDoc](https://godoc.org/github.com/deadcheat/goblet?status.svg)](https://godoc.org/github.com/deadcheat/goblet)
+[![Build Status](https://travis-ci.org/deadcheat/goblet.svg?branch=master)](https://travis-ci.org/deadcheat/goblet) [![Coverage Status](https://coveralls.io/repos/github/deadcheat/goblet/badge.svg?branch=master&service=github)](https://coveralls.io/github/deadcheat/goblet?branch=master&service=github) [![GoDoc](https://godoc.org/github.com/deadcheat/goblet?status.svg)](https://godoc.org/github.com/deadcheat/goblet) [![Go Report Card](https://goreportcard.com/badge/github.com/deadcheat/goblet)](https://goreportcard.com/report/github.com/deadcheat/goblet)
 
 library and cmd tools set for managment assets like go-bindata or go-assets
 
