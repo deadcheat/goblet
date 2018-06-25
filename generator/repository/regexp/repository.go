@@ -6,8 +6,9 @@ import (
 	"github.com/deadcheat/goblet/generator"
 )
 
+// Repository implements generator.RegexpRepository
 type Repository struct {
-	r []*regexp.Regexp
+	rs []*regexp.Regexp
 }
 
 // New return new repository
@@ -30,13 +31,13 @@ func (r *Repository) CompilePatterns(patterns []string) error {
 }
 
 // MatchAny check regexp slices if path matches anyone
-func (re *Repository) MatchAny(path string) bool {
+func (r *Repository) MatchAny(path string) bool {
 	// if no patterns are compiled, return true
-	if len(re.r) == 0 {
+	if len(r.rs) == 0 {
 		return true
 	}
-	for i := range re.r {
-		regexp := re.r[i]
+	for i := range r.rs {
+		regexp := r.rs[i]
 		if regexp != nil && regexp.MatchString(path) {
 			return true
 		}

@@ -9,19 +9,19 @@ import (
 
 var (
 	f = []*File{
-		&File{
+		{
 			Path:       "/tmp/test",
 			Data:       nil,
 			FileMode:   os.ModeDir,
 			ModifiedAt: time.Now(),
 		},
-		&File{
+		{
 			Path:       "/tmp/test/hoge.txt",
 			Data:       []byte("hogehoge"),
 			FileMode:   0x800001ed,
 			ModifiedAt: time.Now(),
 		},
-		&File{
+		{
 			Path:       "/tmp/test/fuga.txt",
 			Data:       []byte("fuga"),
 			FileMode:   0x800001ed,
@@ -34,7 +34,7 @@ var (
 		"/tmp/test/fuga.txt": f[2],
 	}
 	dirs = map[string][]string{
-		"/tmp/test": []string{
+		"/tmp/test": {
 			"hoge.txt", "fuga.txt", "not_exists.png",
 		},
 	}

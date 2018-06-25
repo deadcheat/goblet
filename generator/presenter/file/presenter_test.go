@@ -115,16 +115,16 @@ func TestActionSuccessWithStdout(t *testing.T) {
 
 	mockReturn := &generator.Entity{
 		DirMap: map[string][]string{
-			"/tmpdir/testdir": []string{"testfile.png"},
+			"/tmpdir/testdir": {"testfile.png"},
 		},
 		FileMap: map[string]*goblet.File{
-			"/tmpdir/testdir/testfile.png": &goblet.File{
+			"/tmpdir/testdir/testfile.png": {
 				Path:       "/tmpdir/testdir/testfile.png",
 				Data:       []byte("test"),
 				FileMode:   0x1a4,
 				ModifiedAt: time.Now(),
 			},
-			"/tmpdir/testdir": &goblet.File{
+			"/tmpdir/testdir": {
 				Path:       "/tmpdir/testdir",
 				Data:       []byte("test"),
 				FileMode:   0x800001ed,
@@ -167,16 +167,16 @@ func TestActionSuccessWithFile(t *testing.T) {
 
 	mockReturn := &generator.Entity{
 		DirMap: map[string][]string{
-			"/tmpdir/testdir": []string{"testfile.png"},
+			"/tmpdir/testdir": {"testfile.png"},
 		},
 		FileMap: map[string]*goblet.File{
-			"/tmpdir/testdir/testfile.png": &goblet.File{
+			"/tmpdir/testdir/testfile.png": {
 				Path:       "/tmpdir/testdir/testfile.png",
 				Data:       []byte("test"),
 				FileMode:   0x1a4,
 				ModifiedAt: time.Now(),
 			},
-			"/tmpdir/testdir": &goblet.File{
+			"/tmpdir/testdir": {
 				Path:       "/tmpdir/testdir",
 				Data:       []byte("test"),
 				FileMode:   0x800001ed,
@@ -226,16 +226,16 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 
 	mockReturn := &generator.Entity{
 		DirMap: map[string][]string{
-			"/tmpdir/testdir": []string{"testfile.png"},
+			"/tmpdir/testdir": {"testfile.png"},
 		},
 		FileMap: map[string]*goblet.File{
-			"/tmpdir/testdir/testfile.png": &goblet.File{
+			"/tmpdir/testdir/testfile.png": {
 				Path:       "/tmpdir/testdir/testfile.png",
 				Data:       []byte("test"),
 				FileMode:   0x1a4,
 				ModifiedAt: time.Now(),
 			},
-			"/tmpdir/testdir": &goblet.File{
+			"/tmpdir/testdir": {
 				Path:       "/tmpdir/testdir",
 				Data:       []byte("test"),
 				FileMode:   0x800001ed,

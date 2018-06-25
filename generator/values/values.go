@@ -2,6 +2,7 @@ package values
 
 import "github.com/urfave/cli"
 
+// FlagDefs exported variables for flag defnition
 var FlagDefs = []cli.Flag{
 	cli.StringSliceFlag{
 		Name:  "expression, e",

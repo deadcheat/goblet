@@ -28,7 +28,12 @@ func New(u generator.UseCase) *Presenter {
 	}
 }
 
-var ErrNoArguments = errors.New("Please specify the argument")
+var (
+	// ErrNoArguments will be returned when didn't specify any arguments
+	ErrNoArguments = errors.New("Please specify the argument")
+	// ErrIllegalMount will be returned when wrong argument passed to Mount
+	ErrIllegalMount = errors.New("illegal Mount() call")
+)
 
 func (p *Presenter) action(c *cli.Context) error {
 	if c.NArg() == 0 {
@@ -85,8 +90,6 @@ func (p *Presenter) action(c *cli.Context) error {
 	fmt.Fprintln(writer, string(formatted))
 	return nil
 }
-
-var ErrIllegalMount = errors.New("illegal Mount() call")
 
 // Mount action
 func (p *Presenter) Mount(i interface{}) error {

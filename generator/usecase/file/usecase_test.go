@@ -25,7 +25,7 @@ func TestLoadFilesSuccess(t *testing.T) {
 	defer c.Finish()
 
 	m := mock.NewMockRegexpRepository(c)
-	// successfull pattern
+	// successful pattern
 	filenameSuccess := "success.txt"
 	path := filepath.Join(d.Dir(), filenameSuccess)
 	d.AddFile("success", filenameSuccess, content, 0666)
@@ -113,7 +113,7 @@ func TestAddFileForSingleFiles(t *testing.T) {
 	defer c.Finish()
 
 	m := mock.NewMockRegexpRepository(c)
-	// successfull pattern
+	// successful pattern
 	filenameSuccess := "success.txt"
 	path := filepath.Join(d.Dir(), filenameSuccess)
 	d.AddFile("success", filenameSuccess, content, 0666)
@@ -165,7 +165,7 @@ func TestAddFileForDirectory(t *testing.T) {
 	defer c.Finish()
 	m := mock.NewMockRegexpRepository(c)
 
-	// successfull pattern
+	// successful pattern
 	filenameSuccess1 := "/child/success1.txt"
 	path1 := filepath.Join(d.Dir(), filenameSuccess1)
 	d.AddFile("success", filenameSuccess1, content, 0666)
