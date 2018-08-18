@@ -18,6 +18,19 @@ go get -u github.com/deadcheat/goblet
 
 ## How to use
 
+### Simply crate asset from a directory
+
+```
+goblet /pass/to/your/assets
+```
+
+### Name different package name and output different directory
+
+```
+goblet -p mypackage -o ./mypackage /pass/to/your/assets
+```
+
+### Help Command
 On command-line, goblet acts as asset builder like as go-assets-builder or go-bindata
 ```
 > goblet -h
