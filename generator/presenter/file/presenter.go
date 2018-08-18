@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/deadcheat/goblet/generator"
 	pt "github.com/deadcheat/goblet/generator/presenter/file/template"
@@ -62,11 +63,12 @@ func (p *Presenter) action(c *cli.Context) error {
 
 	var b bytes.Buffer
 	_ = t.Execute(&b, &pt.Assets{
-		PackageName: c.String("package"),
-		VarName:     c.String("name"),
-		DirMap:      e.DirMap,
-		FileMap:     e.FileMap,
-		Paths:       e.Paths,
+		ExecutedCommand: strings.Join(os.Args, " "),
+		PackageName:     c.String("package"),
+		VarName:         c.String("name"),
+		DirMap:          e.DirMap,
+		FileMap:         e.FileMap,
+		Paths:           e.Paths,
 	})
 
 	// gofmt
