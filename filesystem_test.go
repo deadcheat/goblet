@@ -2,6 +2,7 @@ package goblet
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
@@ -60,8 +61,10 @@ func TestNewFS(t *testing.T) {
 func TestWithPrefix(t *testing.T) {
 	path := "/static/"
 
+	base := NewFS(dirs, files)
+
 	// get actual
-	actual := NewFS(dirs, files).WithPrefix(path)
+	actual := base.WithPrefix(path)
 
 	// expected data
 	expected := &FileSystem{
@@ -72,6 +75,10 @@ func TestWithPrefix(t *testing.T) {
 
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("expected and actual are not equal, expected %#+v and actual %#+v", expected, actual)
+	}
+
+	if reflect.DeepEqual(base, actual) {
+		t.Errorf("expected and actual are accidentally equal, expected %#+v and actual %#+v", expected, actual)
 	}
 
 }
@@ -88,27 +95,73 @@ func TestWithPrefix_PanicWhenNil(t *testing.T) {
 	t.Fail()
 }
 
-func TestNameResolute(t *testing.T) {
+func TestWithIgnorePrefix(t *testing.T) {
+	path := "/static/"
+
+	base := NewFS(dirs, files)
+
+	// get actual
+	actual := base.WithIgnoredPrefix(path)
+
+	// expected data
+	expected := &FileSystem{
+		Dirs:          dirs,
+		Files:         files,
+		ignoredPrefix: path,
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("expected and actual are not equal, expected %#+v and actual %#+v", expected, actual)
+	}
+
+	if reflect.DeepEqual(base, actual) {
+		t.Errorf("expected and actual are accidentally equal, expected %#+v and actual %#+v", expected, actual)
+	}
+}
+
+func TestWithIgnoredPrefix_PanicWhenNil(t *testing.T) {
+	var fs *FileSystem
+	defer func() {
+		if err := recover(); err != nil {
+			return
+		}
+		t.Fail()
+	}()
+	fs.WithIgnoredPrefix("")
+	t.Fail()
+}
+func TestResolute(t *testing.T) {
 	prefix := "/static"
 	path := "/static/tmp/test/fuga.txt"
 	fs := NewFS(dirs, files).WithPrefix(prefix)
 
-	actual := fs.nameResolute(path)
+	actual := fs.resolute(path)
 
 	expected := "/tmp/test/fuga.txt"
 
 	if actual != expected {
-		t.Errorf("path FileSystem.nameResolute returned: %s does not equal expected: %s \n", actual, expected)
+		t.Errorf("path FileSystem.resolute returned: %s does not equal expected: %s \n", actual, expected)
 	}
 
 	fs = NewFS(dirs, files)
 
-	actual = fs.nameResolute(path)
+	actual = fs.resolute(path)
 
 	expected = path
 
 	if actual != expected {
-		t.Errorf("path FileSystem.nameResolute returned: %s does not equal expected: %s \n", actual, expected)
+		t.Errorf("path FileSystem.resolute returned: %s does not equal expected: %s \n", actual, expected)
+	}
+
+	ignored := "/static/"
+	fs = NewFS(dirs, files).WithIgnoredPrefix(ignored)
+	path = "/tmp/test/fuga.txt"
+	actual = fs.resolute(path)
+
+	expected = filepath.Join(ignored, path)
+
+	if actual != expected {
+		t.Errorf("path FileSystem.resolute returned: %s does not equal expected: %s \n", actual, expected)
 	}
 }
 
