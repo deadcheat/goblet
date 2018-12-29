@@ -35,7 +35,7 @@ var {{ $VarName }} = goblet.NewFS(
 	},
 	map[string]*goblet.File {
 		{{- range $p := .Paths }}{{ with (index $FileMap $p)}}
-		"{{$p}}": goblet.NewFile("{{$p}}", {{if not .Data }}nil{{ else }}[]byte(_{{ $VarName }}{{ sha1 $p }}){{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
+		"{{$p}}": goblet.NewFile("{{$p}}", {{if .IsDir }}nil{{ else }}[]byte(_{{ $VarName }}{{ sha1 $p }}){{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
 		{{- end }}
 	},
 )
@@ -43,7 +43,7 @@ var {{ $VarName }} = goblet.NewFS(
 // binary data
 var (
 	{{- range $p := .Paths }}{{ with (index $FileMap $p) }}
-	{{if .Data }}_{{ $VarName }}{{ sha1 $p}} = {{ printData .Data }}{{ end }}{{ end }}
+	{{if not .IsDir }}_{{ $VarName }}{{ sha1 $p}} = {{ printData .Data }}{{ end }}{{ end }}
 	{{- end }}
 )
 `
