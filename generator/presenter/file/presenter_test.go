@@ -3,6 +3,7 @@ package file
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
@@ -27,7 +28,7 @@ func TestMount(t *testing.T) {
 	m := mock.NewMockUseCase(c)
 	p := New(m)
 	// Success Pattern
-	a := &cli.App{}
+	a := cli.NewApp()
 	if err := p.Mount(a); err != nil {
 		t.Error("Mount should not return any errors", err)
 	}
@@ -48,9 +49,8 @@ func TestActionNoArgs(t *testing.T) {
 
 	m := mock.NewMockUseCase(c)
 	p := New(m)
-	a := &cli.App{}
+	a := cli.NewApp()
 	p.Mount(a)
-	a.Flags = values.FlagDefs
 	ctx := cli.NewContext(a, fs, nil)
 	if err := p.action(ctx); err != ErrNoArguments {
 		t.Error("Mount should return ErrNoArguments", err)
@@ -69,14 +69,13 @@ func TestActionFailLoadFiles(t *testing.T) {
 	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(nil, errTest)
 
 	p := New(m)
-	a := &cli.App{}
+	a := cli.NewApp()
 	p.Mount(a)
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
 	if err := set.Parse([]string{"config"}); err != nil {
 		panic(err)
 	}
 
-	a.Flags = values.FlagDefs
 	ctx := cli.NewContext(a, set, nil)
 	if err := p.action(ctx); err != errTest {
 		t.Error("Mount should return errTest", err)
@@ -93,14 +92,13 @@ func TestActionFailGoformat(t *testing.T) {
 	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(&generator.Entity{FileMap: nil}, nil)
 
 	p := New(m)
-	a := &cli.App{}
+	a := cli.NewApp()
 	p.Mount(a)
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
 	if err := set.Parse([]string{"config"}); err != nil {
 		panic(err)
 	}
 
-	a.Flags = values.FlagDefs
 	ctx := cli.NewContext(a, set, nil)
 	if err := p.action(ctx); err == nil {
 		t.Error("Mount should return errTest", err)
@@ -141,14 +139,13 @@ func TestActionSuccessWithStdout(t *testing.T) {
 	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(mockReturn, nil)
 
 	p := New(m)
-	a := &cli.App{}
+	a := cli.NewApp()
 	p.Mount(a)
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
 	if err := set.Parse([]string{"config"}); err != nil {
 		panic(err)
 	}
 
-	a.Flags = values.FlagDefs
 	set.String("name", "Asset", "")
 	set.String("package", "assets", "")
 
@@ -188,31 +185,37 @@ func TestActionSuccessWithFile(t *testing.T) {
 			"/tmpdir/testdir/testfile.png",
 		},
 	}
-
-	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(mockReturn, nil)
-
-	p := New(m)
-	a := &cli.App{}
-	p.Mount(a)
-	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	if err := set.Parse([]string{"config"}); err != nil {
-		panic(err)
-	}
-
-	a.Flags = values.FlagDefs
-	set.String("name", "Asset", "")
-	set.String("package", "assets", "")
+	contentStr := "hello world!"
+	content := []byte(contentStr)
 
 	// out to file pattern
 	d := gonch.New("", "tmpdir")
 	defer d.Close()
-	contentStr := "hello world!"
-	content := []byte(contentStr)
 	d.AddFile("testfile", "temp.txt", content, 0777)
 	f, _ := d.File("testfile")
-	set.String("out", f.Path, "")
+	dpath := filepath.Dir(f.Path)
+
+	m := mock.NewMockUseCase(c)
+	m.EXPECT().LoadFiles([]string{filepath.Join(dpath, "config"), "testassets"}, nil).Return(mockReturn, nil)
+
+	p := New(m)
+	a := cli.NewApp()
+	p.Mount(a)
+	set := flag.NewFlagSet("test", flag.ContinueOnError)
+	if err := set.Parse([]string{filepath.Join(dpath, "config"), "testassets"}); err != nil {
+		panic(err)
+	}
+
+	a.Flags = values.FlagDefs
+	set.String("expression", "", "")
+	set.String("out", "", "")
+	set.String("name", "", "")
+	set.String("package", "", "")
+
 	ctx := cli.NewContext(a, set, nil)
+	ctx.Set("out", f.Path)
+	ctx.Set("name", "Asset")
+	ctx.Set("package", "assets")
 	if err := p.action(ctx); err != nil {
 		t.Error("Mount should not return any error: ", err)
 	}
@@ -248,30 +251,53 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 		},
 	}
 
-	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(mockReturn, nil)
-
-	p := New(m)
-	a := &cli.App{}
-	p.Mount(a)
-	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	if err := set.Parse([]string{"config"}); err != nil {
-		panic(err)
-	}
-
-	a.Flags = values.FlagDefs
-	set.String("name", "Asset", "")
-	set.String("package", "assets", "")
-
 	// out to file pattern
 	d := gonch.New("", "tmpdir")
 	defer d.Close()
 
 	d.AddDir("testdir", "testdir", 0111)
 	f, _ := d.File("testdir")
-	set.String("out", filepath.Join(f.Path, "testfile.txt"), "")
+
+	m := mock.NewMockUseCase(c)
+	m.EXPECT().LoadFiles([]string{filepath.Join(f.Path, "config")}, nil).Return(mockReturn, nil)
+
+	p := New(m)
+	a := cli.NewApp()
+	p.Mount(a)
+	set := flag.NewFlagSet("test", flag.ContinueOnError)
+	set.String("expression", "", "")
+	set.String("out", "", "")
+	set.String("name", "", "")
+	set.String("package", "", "")
+
+	a.Flags = values.FlagDefs
+
+	if err := set.Parse([]string{filepath.Join(f.Path, "config")}); err != nil {
+		panic(err)
+	}
 	ctx := cli.NewContext(a, set, nil)
+	ctx.Set("out", filepath.Join(f.Path, "testfile.txt"))
+	ctx.Set("name", "Asset")
+	ctx.Set("package", "assets")
 	if err := p.action(ctx); err == nil {
 		t.Error("Mount should return any error: ", err)
 	}
+}
+
+func TestExecutedCommand(t *testing.T) {
+
+	a := cli.NewApp()
+	set := flag.NewFlagSet("test", flag.ContinueOnError)
+	set.String("expression", "", "")
+	set.String("out", "", "")
+	set.String("name", "", "")
+	set.String("package", "", "")
+
+	a.Flags = values.FlagDefs
+
+	ctx := cli.NewContext(a, set, nil)
+	ctx.Set("out", "/tmp/hoge/test.go")
+	ctx.Set("name", "Asset")
+	ctx.Set("package", "assets")
+	fmt.Println(executedCommand(ctx, []string{"/tmp/hoge/files", "test/files"}))
 }

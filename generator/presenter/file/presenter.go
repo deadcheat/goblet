@@ -8,12 +8,15 @@ import (
 	"go/format"
 	"html/template"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/deadcheat/goblet/generator"
 	pt "github.com/deadcheat/goblet/generator/presenter/file/template"
+	"github.com/deadcheat/goblet/generator/values"
 	"github.com/urfave/cli"
 )
 
@@ -62,21 +65,15 @@ func (p *Presenter) action(c *cli.Context) error {
 	).Parse(pt.AssetFileTemplate)
 
 	var b bytes.Buffer
-	_ = t.Execute(&b, &pt.Assets{
+	assets := &pt.Assets{
 		ExecutedCommand: strings.Join(os.Args, " "),
 		PackageName:     c.String("package"),
 		VarName:         c.String("name"),
 		DirMap:          e.DirMap,
 		FileMap:         e.FileMap,
 		Paths:           e.Paths,
-	})
-
-	// gofmt
-	formatted, err := format.Source(b.Bytes())
-	if err != nil {
-		return err
 	}
-
+	targetPaths := paths
 	var writer io.Writer = os.Stdout
 	outName := c.String("out")
 	if outName != "" {
@@ -88,9 +85,48 @@ func (p *Presenter) action(c *cli.Context) error {
 		}
 		defer f.Close()
 		writer = f
+
+		targetPaths = make([]string, len(paths))
+		baseDir := filepath.Dir(outName)
+		for i, p := range paths {
+			rp, err := filepath.Rel(baseDir, p)
+			if err != nil {
+				log.Println(err)
+				targetPaths[i] = paths[i]
+				continue
+			}
+			targetPaths[i] = rp
+		}
+	}
+	assets.ExecutedCommand = executedCommand(c, targetPaths)
+	_ = t.Execute(&b, assets)
+
+	// gofmt
+	formatted, err := format.Source(b.Bytes())
+	if err != nil {
+		return err
 	}
 	fmt.Fprintln(writer, string(formatted))
 	return nil
+}
+
+func executedCommand(c *cli.Context, argPaths []string) string {
+	var buf bytes.Buffer
+	// write command itself
+	buf.WriteString(os.Args[0])
+	sort.Strings(values.FlagKeys)
+	for _, k := range values.FlagKeys {
+		if c.IsSet(k) {
+			f := values.FlagReaderMap[k]
+			buf.WriteRune(' ')
+			buf.WriteString(f(c))
+		}
+	}
+	for _, ap := range argPaths {
+		buf.WriteRune(' ')
+		buf.WriteString(ap)
+	}
+	return buf.String()
 }
 
 // Mount action
