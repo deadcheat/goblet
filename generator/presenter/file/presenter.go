@@ -62,19 +62,13 @@ func (p *Presenter) action(c *cli.Context) error {
 	).Parse(pt.AssetFileTemplate)
 
 	var b bytes.Buffer
-	_ = t.Execute(&b, &pt.Assets{
+	assets := &pt.Assets{
 		ExecutedCommand: strings.Join(os.Args, " "),
 		PackageName:     c.String("package"),
 		VarName:         c.String("name"),
 		DirMap:          e.DirMap,
 		FileMap:         e.FileMap,
 		Paths:           e.Paths,
-	})
-
-	// gofmt
-	formatted, err := format.Source(b.Bytes())
-	if err != nil {
-		return err
 	}
 
 	var writer io.Writer = os.Stdout
@@ -88,6 +82,13 @@ func (p *Presenter) action(c *cli.Context) error {
 		}
 		defer f.Close()
 		writer = f
+	}
+	_ = t.Execute(&b, assets)
+
+	// gofmt
+	formatted, err := format.Source(b.Bytes())
+	if err != nil {
+		return err
 	}
 	fmt.Fprintln(writer, string(formatted))
 	return nil
