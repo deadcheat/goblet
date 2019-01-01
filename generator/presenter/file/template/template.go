@@ -4,12 +4,13 @@ import "github.com/deadcheat/goblet"
 
 // Assets struct for assign values to template
 type Assets struct {
-	ExecutedCommand string
-	PackageName     string
-	VarName         string
-	DirMap          map[string][]string
-	FileMap         map[string]*goblet.File
-	Paths           []string
+	ExecutedCommand    string
+	PackageName        string
+	VarName            string
+	GenerateGoGenerate bool
+	DirMap             map[string][]string
+	FileMap            map[string]*goblet.File
+	Paths              []string
 }
 
 // AssetFileTemplate template for asset file
@@ -21,7 +22,7 @@ import(
 	"github.com/deadcheat/goblet"
 )
 
-//go:generate {{ .ExecutedCommand }}
+{{ .GenerateGoGenerate }}//go:generate {{ .ExecutedCommand }}{{ end }}
 
 {{ $FileMap := .FileMap}}{{ $DirMap := .DirMap}}{{ $VarName := .VarName }}
 // {{ $VarName }} a generated file system
