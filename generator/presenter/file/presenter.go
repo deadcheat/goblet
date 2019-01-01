@@ -63,15 +63,16 @@ func (p *Presenter) action(c *cli.Context) error {
 			},
 		},
 	).Parse(pt.AssetFileTemplate)
-
+	generateGoGen := c.Bool("generate")
 	var b bytes.Buffer
 	assets := &pt.Assets{
-		ExecutedCommand: strings.Join(os.Args, " "),
-		PackageName:     c.String("package"),
-		VarName:         c.String("name"),
-		DirMap:          e.DirMap,
-		FileMap:         e.FileMap,
-		Paths:           e.Paths,
+		ExecutedCommand:    strings.Join(os.Args, " "),
+		PackageName:        c.String("package"),
+		GenerateGoGenerate: generateGoGen,
+		VarName:            c.String("name"),
+		DirMap:             e.DirMap,
+		FileMap:            e.FileMap,
+		Paths:              e.Paths,
 	}
 	targetPaths := paths
 	var writer io.Writer = os.Stdout
@@ -86,19 +87,23 @@ func (p *Presenter) action(c *cli.Context) error {
 		defer f.Close()
 		writer = f
 
-		targetPaths = make([]string, len(paths))
-		baseDir := filepath.Dir(outName)
-		for i, p := range paths {
-			rp, err := filepath.Rel(baseDir, p)
-			if err != nil {
-				log.Println(err)
-				targetPaths[i] = paths[i]
-				continue
+		if generateGoGen {
+			targetPaths = make([]string, len(paths))
+			baseDir := filepath.Dir(outName)
+			for i, p := range paths {
+				rp, err := filepath.Rel(baseDir, p)
+				if err != nil {
+					log.Println(err)
+					targetPaths[i] = paths[i]
+					continue
+				}
+				targetPaths[i] = rp
 			}
-			targetPaths[i] = rp
 		}
 	}
-	assets.ExecutedCommand = executedCommand(c, targetPaths)
+	if generateGoGen {
+		assets.ExecutedCommand = executedCommand(c, targetPaths)
+	}
 	_ = t.Execute(&b, assets)
 
 	// gofmt
