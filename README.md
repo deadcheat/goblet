@@ -18,10 +18,16 @@ go get -u github.com/deadcheat/goblet
 
 ## How to use
 
-### Simply crate asset from a directory
+### Simply create asset from a directory
 
 ```
 goblet /pass/to/your/assets
+```
+
+### Create asset with go:generate comment
+
+```
+goblet -g /pass/to/your/assets
 ```
 
 ### Name different package name and output different directory
@@ -33,7 +39,7 @@ goblet -p mypackage -o ./mypackage /pass/to/your/assets
 ### Help Command
 On command-line, goblet acts as asset builder like as go-assets-builder or go-bindata
 ```
-> goblet -h
+> goblet -h                                                                                  20:05:27
 NAME:
    goblet - make a binary contain some assets
 
@@ -41,16 +47,17 @@ USAGE:
    goblet [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.3
+   1.0.4
 
 COMMANDS:
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --expression value, -e value  Regular expressions you want files to contain
+   --generate, -g                If set, generate go:generate line to outputfile
+   --name value, -n value        Variable name for output assets (default: "Assets")
    --out value, -o value         Output file name, result will be displaed to standard-out when it's skipped
    --package value, -p value     Package name for output (default: "main")
-   --name value, -n value        Variable name for output assets (default: "Assets")
    --help, -h                    show help
    --version, -v                 print the version
 ```
