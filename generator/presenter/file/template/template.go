@@ -22,7 +22,7 @@ import(
 	"github.com/deadcheat/goblet"
 )
 
-{{ .GenerateGoGenerate }}//go:generate {{ .ExecutedCommand }}{{ end }}
+{{ if .GenerateGoGenerate }}//go:generate {{ .ExecutedCommand }}{{ end }}
 
 {{ $FileMap := .FileMap}}{{ $DirMap := .DirMap}}{{ $VarName := .VarName }}
 // {{ $VarName }} a generated file system
