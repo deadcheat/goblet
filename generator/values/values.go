@@ -15,6 +15,7 @@ type FlagReader func(*cli.Context) string
 var (
 	FlagKeys = []string{
 		"expression",
+		"generate",
 		"name",
 		"out",
 		"package",
@@ -28,18 +29,28 @@ var (
 			}
 			return buf.String()
 		},
+		"generate": func(c *cli.Context) string {
+			if c.Bool("generate") {
+				return "-g"
+			}
+			return ""
+		},
+		"name": func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "n", c.String("name")) },
 		"out": func(c *cli.Context) string {
 			path := c.String("out")
 			bn := filepath.Base(path)
 			return fmt.Sprintf("-%s %s", "o", bn)
 		},
 		"package": func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "p", c.String("package")) },
-		"name":    func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "n", c.String("name")) },
 	}
 	FlagDefs = []cli.Flag{
 		cli.StringSliceFlag{
 			Name:  "expression, e",
 			Usage: "Regular expressions you want files to contain",
+		},
+		cli.BoolFlag{
+			Name:  "generate, g",
+			Usage: "If set, generate go:generate line to outputfile",
 		},
 		cli.StringFlag{
 			Name:  "name, n",

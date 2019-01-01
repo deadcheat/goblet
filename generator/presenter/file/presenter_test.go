@@ -211,11 +211,13 @@ func TestActionSuccessWithFile(t *testing.T) {
 	set.String("out", "", "")
 	set.String("name", "", "")
 	set.String("package", "", "")
+	set.Bool("generate", false, "")
 
 	ctx := cli.NewContext(a, set, nil)
 	ctx.Set("out", f.Path)
 	ctx.Set("name", "Asset")
 	ctx.Set("package", "assets")
+	ctx.Set("generate", "true")
 	if err := p.action(ctx); err != nil {
 		t.Error("Mount should not return any error: ", err)
 	}
@@ -292,6 +294,7 @@ func TestExecutedCommand(t *testing.T) {
 	set.String("out", "", "")
 	set.String("name", "", "")
 	set.String("package", "", "")
+	set.Bool("generate", false, "")
 
 	a.Flags = values.FlagDefs
 
@@ -299,5 +302,6 @@ func TestExecutedCommand(t *testing.T) {
 	ctx.Set("out", "/tmp/hoge/test.go")
 	ctx.Set("name", "Asset")
 	ctx.Set("package", "assets")
+	ctx.Set("generate", "true")
 	fmt.Println(executedCommand(ctx, []string{"/tmp/hoge/files", "test/files"}))
 }
