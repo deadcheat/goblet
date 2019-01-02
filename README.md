@@ -44,10 +44,10 @@ NAME:
    goblet - make a binary contain some assets
 
 USAGE:
-   goblet [global options] command [command options] [arguments...]
+   main [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.4
+   1.1.0
 
 COMMANDS:
      help, h  Shows a list of commands or help for one command

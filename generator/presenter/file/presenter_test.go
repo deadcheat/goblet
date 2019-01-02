@@ -146,8 +146,8 @@ func TestActionSuccessWithStdout(t *testing.T) {
 		panic(err)
 	}
 
-	set.String("name", "Asset", "")
-	set.String("package", "assets", "")
+	set.String(values.FlagKeyName, "Asset", "")
+	set.String(values.FlagKeyPackage, "assets", "")
 
 	// stdout pattern
 	ctx := cli.NewContext(a, set, nil)
@@ -206,18 +206,18 @@ func TestActionSuccessWithFile(t *testing.T) {
 		panic(err)
 	}
 
-	a.Flags = values.FlagDefs
-	set.String("expression", "", "")
-	set.String("out", "", "")
-	set.String("name", "", "")
-	set.String("package", "", "")
-	set.Bool("generate", false, "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
+	set.String(values.FlagKeyOut, "", "")
+	set.String(values.FlagKeyName, "", "")
+	set.String(values.FlagKeyPackage, "", "")
+	set.Bool(values.FlagKeyGenerate, false, "")
 
 	ctx := cli.NewContext(a, set, nil)
-	ctx.Set("out", f.Path)
-	ctx.Set("name", "Asset")
-	ctx.Set("package", "assets")
-	ctx.Set("generate", "true")
+	ctx.Set(values.FlagKeyOut, f.Path)
+	ctx.Set(values.FlagKeyName, "Asset")
+	ctx.Set(values.FlagKeyPackage, "assets")
+	ctx.Set(values.FlagKeyGenerate, "true")
 	if err := p.action(ctx); err != nil {
 		t.Error("Mount should not return any error: ", err)
 	}
@@ -267,10 +267,11 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 	a := cli.NewApp()
 	p.Mount(a)
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	set.String("expression", "", "")
-	set.String("out", "", "")
-	set.String("name", "", "")
-	set.String("package", "", "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
+	set.String(values.FlagKeyOut, "", "")
+	set.String(values.FlagKeyName, "", "")
+	set.String(values.FlagKeyPackage, "", "")
 
 	a.Flags = values.FlagDefs
 
@@ -278,9 +279,9 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 		panic(err)
 	}
 	ctx := cli.NewContext(a, set, nil)
-	ctx.Set("out", filepath.Join(f.Path, "testfile.txt"))
-	ctx.Set("name", "Asset")
-	ctx.Set("package", "assets")
+	ctx.Set(values.FlagKeyOut, filepath.Join(f.Path, "testfile.txt"))
+	ctx.Set(values.FlagKeyName, "Asset")
+	ctx.Set(values.FlagKeyPackage, "assets")
 	if err := p.action(ctx); err == nil {
 		t.Error("Mount should return any error: ", err)
 	}
@@ -290,18 +291,19 @@ func TestExecutedCommand(t *testing.T) {
 
 	a := cli.NewApp()
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	set.String("expression", "", "")
-	set.String("out", "", "")
-	set.String("name", "", "")
-	set.String("package", "", "")
-	set.Bool("generate", false, "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
+	set.String(values.FlagKeyOut, "", "")
+	set.String(values.FlagKeyName, "", "")
+	set.String(values.FlagKeyPackage, "", "")
+	set.Bool(values.FlagKeyGenerate, false, "")
 
 	a.Flags = values.FlagDefs
 
 	ctx := cli.NewContext(a, set, nil)
-	ctx.Set("out", "/tmp/hoge/test.go")
-	ctx.Set("name", "Asset")
-	ctx.Set("package", "assets")
-	ctx.Set("generate", "true")
+	ctx.Set(values.FlagKeyOut, "/tmp/hoge/test.go")
+	ctx.Set(values.FlagKeyName, "Asset")
+	ctx.Set(values.FlagKeyPackage, "assets")
+	ctx.Set(values.FlagKeyGenerate, "true")
 	fmt.Println(executedCommand(ctx, []string{"/tmp/hoge/files", "test/files"}))
 }

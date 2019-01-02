@@ -37,8 +37,8 @@ func (r *Repository) MatchAny(path string) bool {
 		return true
 	}
 	for i := range r.rs {
-		regexp := r.rs[i]
-		if regexp != nil && regexp.MatchString(path) {
+		reg := r.rs[i]
+		if reg != nil && reg.MatchString(path) {
 			return true
 		}
 	}
