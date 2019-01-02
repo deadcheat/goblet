@@ -11,37 +11,50 @@ import (
 // FlagReader converter flag value to string
 type FlagReader func(*cli.Context) string
 
+const (
+	// FlagKeyExpression flag name "expression"
+	FlagKeyExpression = "expression"
+	// FlagKeyGenerate flag name "generate"
+	FlagKeyGenerate = "generate"
+	// FlagKeyName flag name "name"
+	FlagKeyName = "name"
+	// FlagKeyOut flag name "out"
+	FlagKeyOut = "out"
+	// FlagKeyPackage flag name "package"
+	FlagKeyPackage = "package"
+)
+
 // FlagDefs exported variables for flag defnition
 var (
 	FlagKeys = []string{
-		"expression",
-		"generate",
-		"name",
-		"out",
-		"package",
+		FlagKeyExpression,
+		FlagKeyGenerate,
+		FlagKeyName,
+		FlagKeyOut,
+		FlagKeyPackage,
 	}
 	FlagReaderMap = map[string]FlagReader{
-		"expression": func(c *cli.Context) string {
-			es := c.StringSlice("expression")
+		FlagKeyExpression: func(c *cli.Context) string {
+			es := c.StringSlice(FlagKeyExpression)
 			var buf bytes.Buffer
 			for _, e := range es {
 				_, _ = buf.WriteString(fmt.Sprintf("-%s %s", "e", e))
 			}
 			return buf.String()
 		},
-		"generate": func(c *cli.Context) string {
-			if c.Bool("generate") {
+		FlagKeyGenerate: func(c *cli.Context) string {
+			if c.Bool(FlagKeyGenerate) {
 				return "-g"
 			}
 			return ""
 		},
-		"name": func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "n", c.String("name")) },
-		"out": func(c *cli.Context) string {
-			path := c.String("out")
+		FlagKeyName: func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "n", c.String(FlagKeyName)) },
+		FlagKeyOut: func(c *cli.Context) string {
+			path := c.String(FlagKeyOut)
 			bn := filepath.Base(path)
 			return fmt.Sprintf("-%s %s", "o", bn)
 		},
-		"package": func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "p", c.String("package")) },
+		FlagKeyPackage: func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "p", c.String(FlagKeyPackage)) },
 	}
 	FlagDefs = []cli.Flag{
 		cli.StringSliceFlag{
