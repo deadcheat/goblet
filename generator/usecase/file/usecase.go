@@ -47,8 +47,11 @@ func (u *UseCase) LoadFiles(paths []string, includePatterns []string) (*generato
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
-			log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
-			continue
+			if err == ErrFileIsNotMatchExpression {
+				log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
+				continue
+			}
+			return nil, err
 		}
 	}
 	e := &generator.Entity{
@@ -66,11 +69,11 @@ func (u *UseCase) addFile(path string) (err error) {
 	if err != nil {
 		return err
 	}
-	u.validPaths = append(u.validPaths, vPath)
 	if !fi.IsDir() {
 		if !u.rr.MatchAny(path) {
 			return ErrFileIsNotMatchExpression
 		}
+		u.validPaths = append(u.validPaths, vPath)
 		var data []byte
 		data, err = ioutil.ReadFile(path)
 		if err != nil {
@@ -80,6 +83,7 @@ func (u *UseCase) addFile(path string) (err error) {
 		u.fileMap[vPath] = file
 		return nil
 	}
+	u.validPaths = append(u.validPaths, vPath)
 	children := u.dirMap[vPath]
 	if children == nil {
 		children = make([]string, 0)
@@ -95,6 +99,10 @@ func (u *UseCase) addFile(path string) (err error) {
 		childPath := filepath.Join(path, f.Name())
 		err = u.addFile(childPath)
 		if err != nil {
+			if err == ErrFileIsNotMatchExpression {
+				log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
+				continue
+			}
 			return err
 		}
 		children = append(children, filepath.Base(childPath))
