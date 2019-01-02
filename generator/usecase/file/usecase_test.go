@@ -83,10 +83,10 @@ func TestLoadFilesErrorAddFile(t *testing.T) {
 	m := mock.NewMockRegexpRepository(c)
 
 	// should not be contained
-	fileWrongPath := "doesnotmatch.txt"
-	wrongPath := filepath.Join(d.Dir(), fileWrongPath)
-	d.AddFile("wrong path file", fileWrongPath, content, 0666)
-	m.EXPECT().MatchAny(wrongPath).Return(false)
+	fileDoesNotPermitted := "fail.txt"
+	permitWrongPath := filepath.Join(d.Dir(), fileDoesNotPermitted)
+	d.AddFile("success", fileDoesNotPermitted, content, 0000)
+	m.EXPECT().MatchAny(permitWrongPath).AnyTimes().Return(true)
 
 	// add Expects for CompilePatterns
 	emptyPatterns := make([]string, 0)
@@ -95,9 +95,57 @@ func TestLoadFilesErrorAddFile(t *testing.T) {
 	// create usecase
 	iu := New(m)
 
-	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	_, err := iu.LoadFiles([]string{d.Dir(), permitWrongPath}, emptyPatterns)
 	if err == nil {
 		t.Error("addFile should return error")
+	}
+
+}
+
+func TestLoadFilesSkipNotMatchedFile(t *testing.T) {
+	// Prepare dir and file
+	contentStr := "hello world!"
+	content := []byte(contentStr)
+	d := gonch.New("", "tmpdir")
+	defer d.Close() // clean up
+
+	// Prepare mock
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	m := mock.NewMockRegexpRepository(c)
+
+	// should not be contained
+	fileDoesNotMatch := "doesnotmatch.txt"
+	notMatchPath := filepath.Join(d.Dir(), fileDoesNotMatch)
+	d.AddFile("wrong path file", fileDoesNotMatch, content, 0666)
+	m.EXPECT().MatchAny(notMatchPath).AnyTimes().Return(false)
+
+	// add Expects for CompilePatterns
+	emptyPatterns := make([]string, 0)
+	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+
+	// create usecase
+	iu := New(m)
+
+	result, err := iu.LoadFiles([]string{d.Dir(), notMatchPath}, emptyPatterns)
+	if err != nil {
+		t.Error("addFile should not return error")
+	}
+
+	if len(result.DirMap[d.Dir()]) != 0 {
+		t.Error("some files are included in dirmap")
+	}
+
+	_, ok := result.FileMap[notMatchPath]
+	if ok {
+		t.Error("unmatched file are included in filemap")
+	}
+
+	for _, v := range result.Paths {
+		if v == notMatchPath {
+			t.Error("unmatched file are included in path slice")
+		}
 	}
 }
 
@@ -119,12 +167,12 @@ func TestAddFileForSingleFiles(t *testing.T) {
 	d.AddFile("success", filenameSuccess, content, 0666)
 	m.EXPECT().MatchAny(path).Return(true)
 	// should not be contained
-	fileWrongPath := "doesnotmatch.txt"
-	wrongPath := filepath.Join(d.Dir(), fileWrongPath)
-	d.AddFile("wrong path file", fileWrongPath, content, 0666)
-	m.EXPECT().MatchAny(wrongPath).Return(false)
+	fileDoesNotMatch := "doesnotmatch.txt"
+	pathDoesNotMatch := filepath.Join(d.Dir(), fileDoesNotMatch)
+	d.AddFile("wrong path file", fileDoesNotMatch, content, 0666)
+	m.EXPECT().MatchAny(pathDoesNotMatch).Return(false)
 	// file can not be opened
-	d.AddFile("wrong path file", wrongPath, content, 0666)
+	d.AddFile("wrong path file", pathDoesNotMatch, content, 0666)
 	closedPath := filepath.Join(d.Dir(), "closed.txt")
 	ioutil.WriteFile(closedPath, []byte(""), 0000)
 	m.EXPECT().MatchAny(closedPath).Return(true)
@@ -138,7 +186,7 @@ func TestAddFileForSingleFiles(t *testing.T) {
 	if err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
-	err = u.addFile(wrongPath)
+	err = u.addFile(pathDoesNotMatch)
 	if err != ErrFileIsNotMatchExpression {
 		t.Error("addFile should return ErrFileIsNotMatchExpression but returned ", err)
 	}
@@ -182,6 +230,11 @@ func TestAddFileForDirectory(t *testing.T) {
 		panic(err)
 	}
 
+	filenameSuccess3 := "/fail.txt"
+	path3 := filepath.Join(d.Dir(), filenameSuccess3)
+	d.AddFile("success", filenameSuccess3, content, 0000)
+	m.EXPECT().MatchAny(path3).AnyTimes().Return(true)
+
 	// permission denied file in permitted dir
 	permittedDir := "/permitteddir"
 	if err := d.AddDir("permitteddir", permittedDir, os.ModePerm); err != nil {
@@ -211,6 +264,10 @@ func TestAddFileForDirectory(t *testing.T) {
 
 	// when file in dir is permitted
 	if err := u.addFile(filepath.Join(d.Dir(), permittedDir)); err == nil {
+		t.Error("addFile should return any error when file in dir is denied")
+	}
+	// when file in dir is not permitted
+	if err := u.addFile(path3); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
 	}
 }
