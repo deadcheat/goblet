@@ -3,6 +3,7 @@ package file
 import (
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -38,15 +39,16 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 }
 
 // LoadFiles load files for given paths, except what matches given ignore path regex
-func (u *UseCase) LoadFiles(paths []string, ignorePatterns []string) (*generator.Entity, error) {
-	if err := u.rr.CompilePatterns(ignorePatterns); err != nil {
+func (u *UseCase) LoadFiles(paths []string, includePatterns []string) (*generator.Entity, error) {
+	if err := u.rr.CompilePatterns(includePatterns); err != nil {
 		return nil, err
 	}
 
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
-			return nil, err
+			log.Printf("path %s is not matched pattern given in 'expression(e)' flag")
+			continue
 		}
 	}
 	e := &generator.Entity{

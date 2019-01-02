@@ -44,7 +44,7 @@ func (p *Presenter) action(c *cli.Context) error {
 		return ErrNoArguments
 	}
 	paths := append([]string{c.Args().First()}, c.Args().Tail()...)
-	ignores := c.StringSlice("except")
+	ignores := c.StringSlice(values.FlagKeyExpression)
 	e, err := p.usecase.LoadFiles(paths, ignores)
 	if err != nil {
 		return err
@@ -63,20 +63,20 @@ func (p *Presenter) action(c *cli.Context) error {
 			},
 		},
 	).Parse(pt.AssetFileTemplate)
-	generateGoGen := c.Bool("generate")
+	generateGoGen := c.Bool(values.FlagKeyGenerate)
 	var b bytes.Buffer
 	assets := &pt.Assets{
 		ExecutedCommand:    strings.Join(os.Args, " "),
-		PackageName:        c.String("package"),
+		PackageName:        c.String(values.FlagKeyPackage),
 		GenerateGoGenerate: generateGoGen,
-		VarName:            c.String("name"),
+		VarName:            c.String(values.FlagKeyName),
 		DirMap:             e.DirMap,
 		FileMap:            e.FileMap,
 		Paths:              e.Paths,
 	}
 	targetPaths := paths
 	var writer io.Writer = os.Stdout
-	outName := c.String("out")
+	outName := c.String(values.FlagKeyOut)
 	if outName != "" {
 		// current dir
 		target, _ := filepath.Abs(outName)
