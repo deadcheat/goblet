@@ -1,6 +1,7 @@
 language: go
 go:
     - "1.10"
+    - "1.11"
 go_import_path: github.com/deadcheat/goblet
 before_install:
     - go get -v -u github.com/modocache/gover
