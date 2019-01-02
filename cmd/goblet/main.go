@@ -17,7 +17,7 @@ func main() {
 
 	app.Name = "goblet"
 	app.Usage = "make a binary contain some assets"
-	app.Version = "1.0.4"
+	app.Version = "1.1.0"
 
 	app.Flags = values.FlagDefs
 	// mount presenter
