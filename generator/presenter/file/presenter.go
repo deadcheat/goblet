@@ -44,8 +44,8 @@ func (p *Presenter) action(c *cli.Context) error {
 		return ErrNoArguments
 	}
 	paths := append([]string{c.Args().First()}, c.Args().Tail()...)
-	ignores := c.StringSlice(values.FlagKeyExpression)
-	e, err := p.usecase.LoadFiles(paths, ignores)
+	includes := c.StringSlice(values.FlagKeyExpression)
+	e, err := p.usecase.LoadFiles(paths, includes)
 	if err != nil {
 		return err
 	}

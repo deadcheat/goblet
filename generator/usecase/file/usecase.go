@@ -47,7 +47,7 @@ func (u *UseCase) LoadFiles(paths []string, includePatterns []string) (*generato
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
-			log.Printf("path %s is not matched pattern given in 'expression(e)' flag")
+			log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
 			continue
 		}
 	}

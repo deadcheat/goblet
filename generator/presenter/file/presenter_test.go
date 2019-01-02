@@ -206,8 +206,8 @@ func TestActionSuccessWithFile(t *testing.T) {
 		panic(err)
 	}
 
-	a.Flags = values.FlagDefs
-	set.String(values.FlagKeyExpression, "", "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
 	set.String(values.FlagKeyOut, "", "")
 	set.String(values.FlagKeyName, "", "")
 	set.String(values.FlagKeyPackage, "", "")
@@ -267,7 +267,8 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 	a := cli.NewApp()
 	p.Mount(a)
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	set.String(values.FlagKeyExpression, "", "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
 	set.String(values.FlagKeyOut, "", "")
 	set.String(values.FlagKeyName, "", "")
 	set.String(values.FlagKeyPackage, "", "")
@@ -290,7 +291,8 @@ func TestExecutedCommand(t *testing.T) {
 
 	a := cli.NewApp()
 	set := flag.NewFlagSet("test", flag.ContinueOnError)
-	set.String(values.FlagKeyExpression, "", "")
+	var v cli.StringSlice
+	set.Var(&v, values.FlagKeyExpression, "")
 	set.String(values.FlagKeyOut, "", "")
 	set.String(values.FlagKeyName, "", "")
 	set.String(values.FlagKeyPackage, "", "")
