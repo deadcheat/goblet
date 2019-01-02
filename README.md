@@ -39,7 +39,7 @@ goblet -p mypackage -o ./mypackage /pass/to/your/assets
 ### Help Command
 On command-line, goblet acts as asset builder like as go-assets-builder or go-bindata
 ```
-> goblet -h                                                                                  20:05:27
+> goblet -h
 NAME:
    goblet - make a binary contain some assets
 
