@@ -128,14 +128,14 @@ func (mr *MockPathMatcherRepositoryMockRecorder) Match(arg0 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Match", reflect.TypeOf((*MockPathMatcherRepository)(nil).Match), arg0)
 }
 
-// Preapare mocks base method
-func (m *MockPathMatcherRepository) Preapare(arg0 interface{}) error {
-	ret := m.ctrl.Call(m, "Preapare", arg0)
+// Prepare mocks base method
+func (m *MockPathMatcherRepository) Prepare(arg0 interface{}) error {
+	ret := m.ctrl.Call(m, "Prepare", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Preapare indicates an expected call of Preapare
-func (mr *MockPathMatcherRepositoryMockRecorder) Preapare(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Preapare", reflect.TypeOf((*MockPathMatcherRepository)(nil).Preapare), arg0)
+// Prepare indicates an expected call of Prepare
+func (mr *MockPathMatcherRepositoryMockRecorder) Prepare(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Prepare", reflect.TypeOf((*MockPathMatcherRepository)(nil).Prepare), arg0)
 }
