@@ -21,3 +21,9 @@ type RegexpRepository interface {
 	CompilePatterns(patterns []string) error
 	MatchAny(path string) bool
 }
+
+// PathMatcherRepository respository to judge path is match or not
+type PathMatcherRepository interface {
+	Preapare(interface{}) error
+	Match(path string) bool
+}
