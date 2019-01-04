@@ -13,7 +13,7 @@ type Entity struct {
 
 // UseCase interface
 type UseCase interface {
-	LoadFiles(paths []string, ignorePatterns []string) (*Entity, error)
+	LoadFiles(paths []string, includePatterns []string) (*Entity, error)
 }
 
 // RegexpRepository repository for slice of regexp

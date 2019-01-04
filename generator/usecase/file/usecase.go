@@ -38,7 +38,7 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 	}
 }
 
-// LoadFiles load files for given paths, except what matches given ignore path regex
+// LoadFiles load files for given paths, filtered by what matches given include path regex
 func (u *UseCase) LoadFiles(paths []string, includePatterns []string) (*generator.Entity, error) {
 	if err := u.rr.CompilePatterns(includePatterns); err != nil {
 		return nil, err

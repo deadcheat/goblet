@@ -5,9 +5,10 @@
 package mock
 
 import (
+	reflect "reflect"
+
 	generator "github.com/deadcheat/goblet/generator"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
 // MockUseCase is a mock of UseCase interface
@@ -34,16 +35,16 @@ func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
 }
 
 // LoadFiles mocks base method
-func (m *MockUseCase) LoadFiles(paths, ignorePatterns []string) (*generator.Entity, error) {
-	ret := m.ctrl.Call(m, "LoadFiles", paths, ignorePatterns)
+func (m *MockUseCase) LoadFiles(paths, includePatterns []string) (*generator.Entity, error) {
+	ret := m.ctrl.Call(m, "LoadFiles", paths, includePatterns)
 	ret0, _ := ret[0].(*generator.Entity)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // LoadFiles indicates an expected call of LoadFiles
-func (mr *MockUseCaseMockRecorder) LoadFiles(paths, ignorePatterns interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadFiles", reflect.TypeOf((*MockUseCase)(nil).LoadFiles), paths, ignorePatterns)
+func (mr *MockUseCaseMockRecorder) LoadFiles(paths, includePatterns interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadFiles", reflect.TypeOf((*MockUseCase)(nil).LoadFiles), paths, includePatterns)
 }
 
 // MockRegexpRepository is a mock of RegexpRepository interface
