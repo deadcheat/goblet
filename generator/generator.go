@@ -11,6 +11,11 @@ type Entity struct {
 	Paths   []string
 }
 
+type OptionFlagEntiry struct {
+	IncludePatterns []string
+	IgnoreDotFiles  bool
+}
+
 // UseCase interface
 type UseCase interface {
 	LoadFiles(paths []string, includePatterns []string) (*Entity, error)
