@@ -29,6 +29,6 @@ type RegexpRepository interface {
 
 // PathMatcherRepository respository to judge path is match or not
 type PathMatcherRepository interface {
-	Prepare(interface{}) error
+	Prepare(OptionFlagEntiry) error
 	Match(path string) bool
 }

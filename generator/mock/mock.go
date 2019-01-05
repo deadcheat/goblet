@@ -129,7 +129,7 @@ func (mr *MockPathMatcherRepositoryMockRecorder) Match(arg0 interface{}) *gomock
 }
 
 // Prepare mocks base method
-func (m *MockPathMatcherRepository) Prepare(arg0 interface{}) error {
+func (m *MockPathMatcherRepository) Prepare(arg0 generator.OptionFlagEntiry) error {
 	ret := m.ctrl.Call(m, "Prepare", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
