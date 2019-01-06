@@ -1,6 +1,12 @@
 package dotfileignorematcher
 
-import "github.com/deadcheat/goblet/generator"
+import (
+	"log"
+	"path/filepath"
+	"strings"
+
+	"github.com/deadcheat/goblet/generator"
+)
 
 // Repository implements generator.RegexpRepository
 type Repository struct {
@@ -18,7 +24,16 @@ func (r *Repository) Prepare(e generator.OptionFlagEntiry) error {
 	return nil
 }
 
-// Match return true when path is dotfile path and ignoreDotFiles is true
+// Match return true if path IS NOT A DOTFILE when ignoreDotFiles is true, or else, return true
 func (r *Repository) Match(path string) bool {
-	return false
+	if r.ignoreDotFiles {
+		abpath, err := filepath.Abs(path)
+		if err != nil {
+			log.Println("couldn't get abs from path ", path)
+			return false
+		}
+		basepath := filepath.Base(abpath)
+		return !strings.HasPrefix(basepath, ".")
+	}
+	return true
 }
