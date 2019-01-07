@@ -11,7 +11,7 @@ type Entity struct {
 	Paths   []string
 }
 
-type OptionFlagEntiry struct {
+type OptionFlagEntity struct {
 	IncludePatterns []string
 	IgnoreDotFiles  bool
 }
@@ -29,6 +29,6 @@ type RegexpRepository interface {
 
 // PathMatcherRepository respository to judge path is match or not
 type PathMatcherRepository interface {
-	Prepare(OptionFlagEntiry) error
+	Prepare(OptionFlagEntity) error
 	Match(path string) bool
 }

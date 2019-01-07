@@ -19,7 +19,7 @@ func New() generator.PathMatcherRepository {
 }
 
 // Prepare set ignoreDotFiles from flag
-func (r *Repository) Prepare(e generator.OptionFlagEntiry) error {
+func (r *Repository) Prepare(e generator.OptionFlagEntity) error {
 	r.ignoreDotFiles = e.IgnoreDotFiles
 	return nil
 }
