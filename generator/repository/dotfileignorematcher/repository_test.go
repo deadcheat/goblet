@@ -31,3 +31,16 @@ func TestMatchReturnTrueWhenIgnoreDotFilesIsFalse(t *testing.T) {
 		t.Error("Match() should return true when IgnoreDotFiles is false")
 	}
 }
+
+func TestMatchReturnFalseWhenIgnoreDotFilesIsTrueAndHaveDotPrefix(t *testing.T) {
+	e := generator.OptionFlagEntity{
+		IgnoreDotFiles: true,
+	}
+	testee := New()
+	testee.Prepare(e)
+
+	testPath := ".gitignore"
+	if testee.Match(testPath) != false {
+		t.Error("Match() should return false when IgnoreDotFiles is true and has dot-prefix")
+	}
+}

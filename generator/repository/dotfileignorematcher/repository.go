@@ -1,7 +1,6 @@
 package dotfileignorematcher
 
 import (
-	"log"
 	"path/filepath"
 	"strings"
 
@@ -27,11 +26,7 @@ func (r *Repository) Prepare(e generator.OptionFlagEntity) error {
 // Match return true if path IS NOT A DOTFILE when ignoreDotFiles is true, or else, return true
 func (r *Repository) Match(path string) bool {
 	if r.ignoreDotFiles {
-		abpath, err := filepath.Abs(path)
-		if err != nil {
-			log.Println("couldn't get abs from path ", path)
-			return false
-		}
+		abpath, _ := filepath.Abs(path)
 		basepath := filepath.Base(abpath)
 		return !strings.HasPrefix(basepath, ".")
 	}
