@@ -18,7 +18,7 @@ type OptionFlagEntity struct {
 
 // UseCase interface
 type UseCase interface {
-	LoadFiles(paths []string, includePatterns []string) (*Entity, error)
+	LoadFiles(paths []string, option OptionFlagEntity) (*Entity, error)
 }
 
 // RegexpRepository repository for slice of regexp
