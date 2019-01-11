@@ -4,8 +4,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/deadcheat/goblet/generator"
 	gpf "github.com/deadcheat/goblet/generator/presenter/file"
-	grr "github.com/deadcheat/goblet/generator/repository/regexp"
+	grd "github.com/deadcheat/goblet/generator/repository/dotfileignorematcher"
+	grr "github.com/deadcheat/goblet/generator/repository/regexpmatcher"
 	guf "github.com/deadcheat/goblet/generator/usecase/file"
 	"github.com/deadcheat/goblet/generator/values"
 
@@ -17,11 +19,11 @@ func main() {
 
 	app.Name = "goblet"
 	app.Usage = "make a binary contain some assets"
-	app.Version = "1.1.0"
+	app.Version = "1.2.0"
 
 	app.Flags = values.FlagDefs
 	// mount presenter
-	presenter := gpf.New(guf.New(grr.New()))
+	presenter := gpf.New(guf.New([]generator.PathMatcherRepository{grr.New(), grd.New()}))
 	if err := presenter.Mount(app); err != nil {
 		log.Fatal(err)
 	}
