@@ -66,7 +66,8 @@ func TestActionFailLoadFiles(t *testing.T) {
 	defer c.Finish()
 
 	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(nil, errTest)
+	op := generator.OptionFlagEntity{}
+	m.EXPECT().LoadFiles([]string{"config"}, op).Return(nil, errTest)
 
 	p := New(m)
 	a := cli.NewApp()
@@ -89,7 +90,8 @@ func TestActionFailGoformat(t *testing.T) {
 	defer c.Finish()
 
 	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(&generator.Entity{FileMap: nil}, nil)
+	op := generator.OptionFlagEntity{}
+	m.EXPECT().LoadFiles([]string{"config"}, op).Return(&generator.Entity{FileMap: nil}, nil)
 
 	p := New(m)
 	a := cli.NewApp()
@@ -136,7 +138,8 @@ func TestActionSuccessWithStdout(t *testing.T) {
 	}
 
 	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{"config"}, nil).Return(mockReturn, nil)
+	op := generator.OptionFlagEntity{}
+	m.EXPECT().LoadFiles([]string{"config"}, op).Return(mockReturn, nil)
 
 	p := New(m)
 	a := cli.NewApp()
@@ -196,7 +199,8 @@ func TestActionSuccessWithFile(t *testing.T) {
 	dpath := filepath.Dir(f.Path)
 
 	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{filepath.Join(dpath, "config"), "testassets"}, nil).Return(mockReturn, nil)
+	op := generator.OptionFlagEntity{}
+	m.EXPECT().LoadFiles([]string{filepath.Join(dpath, "config"), "testassets"}, op).Return(mockReturn, nil)
 
 	p := New(m)
 	a := cli.NewApp()
@@ -261,7 +265,8 @@ func TestActionFailWhenCouldNotOpenFile(t *testing.T) {
 	f, _ := d.File("testdir")
 
 	m := mock.NewMockUseCase(c)
-	m.EXPECT().LoadFiles([]string{filepath.Join(f.Path, "config")}, nil).Return(mockReturn, nil)
+	op := generator.OptionFlagEntity{}
+	m.EXPECT().LoadFiles([]string{filepath.Join(f.Path, "config")}, op).Return(mockReturn, nil)
 
 	p := New(m)
 	a := cli.NewApp()
