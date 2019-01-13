@@ -39,15 +39,15 @@ goblet -p mypackage -o ./mypackage /pass/to/your/assets
 ### Help Command
 On command-line, goblet acts as asset builder like as go-assets-builder or go-bindata
 ```
-> goblet -h
+> goblet -h                                                                                   14:23:19
 NAME:
    goblet - make a binary contain some assets
 
 USAGE:
-   main [global options] command [command options] [arguments...]
+   goblet [global options] command [command options] [arguments...]
 
 VERSION:
-   1.1.0
+   1.2.0
 
 COMMANDS:
      help, h  Shows a list of commands or help for one command
@@ -55,6 +55,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --expression value, -e value  Regular expressions you want files to contain
    --generate, -g                If set, generate go:generate line to outputfile
+   --ignore-dotfiles             If set, ignore dotfiles(i.e. '.gitkeep')
    --name value, -n value        Variable name for output assets (default: "Assets")
    --out value, -o value         Output file name, result will be displaed to standard-out when it's skipped
    --package value, -p value     Package name for output (default: "main")
