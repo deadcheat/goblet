@@ -13,7 +13,8 @@ install:
 script:
     - go test -coverprofile=goblet.coverprofile github.com/deadcheat/goblet
     - go test -coverprofile=goblet-presenter.coverprofile github.com/deadcheat/goblet/generator/presenter/file
-    - go test -coverprofile=goblet-repository.coverprofile github.com/deadcheat/goblet/generator/repository/regexp
+    - go test -coverprofile=goblet-repository.dotfileignore.coverprofile github.com/deadcheat/goblet/generator/repository/dotfileignorematcher
+    - go test -coverprofile=goblet-repository.regexpmatcher.coverprofile github.com/deadcheat/goblet/generator/repository/regexpmatcher
     - go test -coverprofile=goblet-usecase.coverprofile github.com/deadcheat/goblet/generator/usecase/file
     - $HOME/gopath/bin/gover
     - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci

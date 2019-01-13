@@ -18,14 +18,14 @@ var (
 
 // UseCase file usecase
 type UseCase struct {
-	rr         generator.RegexpRepository
+	rr         []generator.PathMatcherRepository
 	fileMap    map[string]*goblet.File
 	dirMap     map[string][]string
 	validPaths []string
 }
 
 // New return new UseCase
-func New(rr generator.RegexpRepository) generator.UseCase {
+func New(rr []generator.PathMatcherRepository) generator.UseCase {
 
 	fileMap := make(map[string]*goblet.File)
 	validPaths := make([]string, 0)
@@ -38,12 +38,14 @@ func New(rr generator.RegexpRepository) generator.UseCase {
 	}
 }
 
-// LoadFiles load files for given paths, except what matches given ignore path regex
-func (u *UseCase) LoadFiles(paths []string, includePatterns []string) (*generator.Entity, error) {
-	if err := u.rr.CompilePatterns(includePatterns); err != nil {
-		return nil, err
+// LoadFiles load files for given paths, filtered by what matches given include path regex
+func (u *UseCase) LoadFiles(paths []string, option generator.OptionFlagEntity) (*generator.Entity, error) {
+	for i := range u.rr {
+		repo := u.rr[i]
+		if err := repo.Prepare(option); err != nil {
+			return nil, err
+		}
 	}
-
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
@@ -70,8 +72,11 @@ func (u *UseCase) addFile(path string) (err error) {
 		return err
 	}
 	if !fi.IsDir() {
-		if !u.rr.MatchAny(path) {
-			return ErrFileIsNotMatchExpression
+		for i := range u.rr {
+			repo := u.rr[i]
+			if !repo.Match(path) {
+				return ErrFileIsNotMatchExpression
+			}
 		}
 		u.validPaths = append(u.validPaths, vPath)
 		var data []byte

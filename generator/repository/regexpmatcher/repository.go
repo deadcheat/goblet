@@ -1,4 +1,4 @@
-package regexp
+package regexpmatcher
 
 import (
 	"regexp"
@@ -12,15 +12,15 @@ type Repository struct {
 }
 
 // New return new repository
-func New() generator.RegexpRepository {
+func New() generator.PathMatcherRepository {
 	return &Repository{}
 }
 
 // CompilePatterns compile patterns
-func (r *Repository) CompilePatterns(patterns []string) error {
-	r.rs = make([]*regexp.Regexp, len(patterns))
-	for i := range patterns {
-		pattern := patterns[i]
+func (r *Repository) Prepare(e generator.OptionFlagEntity) error {
+	r.rs = make([]*regexp.Regexp, len(e.IncludePatterns))
+	for i := range e.IncludePatterns {
+		pattern := e.IncludePatterns[i]
 		reg, err := regexp.Compile(pattern)
 		if err != nil {
 			return err
@@ -31,7 +31,7 @@ func (r *Repository) CompilePatterns(patterns []string) error {
 }
 
 // MatchAny check regexp slices if path matches anyone
-func (r *Repository) MatchAny(path string) bool {
+func (r *Repository) Match(path string) bool {
 	// if no patterns are compiled, return true
 	if len(r.rs) == 0 {
 		return true

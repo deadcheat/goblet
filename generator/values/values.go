@@ -22,6 +22,8 @@ const (
 	FlagKeyOut = "out"
 	// FlagKeyPackage flag name "package"
 	FlagKeyPackage = "package"
+	// FlagKeyIgnoreDotfiles flag name "ignore-dotfile"
+	FlagKeyIgnoreDotfiles = "ignore-dotfiles"
 )
 
 // FlagDefs exported variables for flag defnition
@@ -48,6 +50,12 @@ var (
 			}
 			return ""
 		},
+		FlagKeyIgnoreDotfiles: func(c *cli.Context) string {
+			if c.Bool(FlagKeyIgnoreDotfiles) {
+				return "--ignore-dotfiles"
+			}
+			return ""
+		},
 		FlagKeyName: func(c *cli.Context) string { return fmt.Sprintf("-%s %s", "n", c.String(FlagKeyName)) },
 		FlagKeyOut: func(c *cli.Context) string {
 			path := c.String(FlagKeyOut)
@@ -64,6 +72,10 @@ var (
 		cli.BoolFlag{
 			Name:  "generate, g",
 			Usage: "If set, generate go:generate line to outputfile",
+		},
+		cli.BoolFlag{
+			Name:  "ignore-dotfiles",
+			Usage: "If set, ignore dotfiles(i.e. '.gitkeep') ",
 		},
 		cli.StringFlag{
 			Name:  "name, n",

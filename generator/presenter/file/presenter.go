@@ -45,7 +45,11 @@ func (p *Presenter) action(c *cli.Context) error {
 	}
 	paths := append([]string{c.Args().First()}, c.Args().Tail()...)
 	includes := c.StringSlice(values.FlagKeyExpression)
-	e, err := p.usecase.LoadFiles(paths, includes)
+	ignoreDotFiles := c.Bool(values.FlagKeyIgnoreDotfiles)
+	e, err := p.usecase.LoadFiles(paths, generator.OptionFlagEntity{
+		IgnoreDotFiles:  ignoreDotFiles,
+		IncludePatterns: includes,
+	})
 	if err != nil {
 		return err
 	}
