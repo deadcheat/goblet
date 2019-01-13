@@ -9,6 +9,7 @@ import (
 
 	"github.com/deadcheat/gonch"
 
+	"github.com/deadcheat/goblet/generator"
 	"github.com/deadcheat/goblet/generator/mock"
 	"github.com/golang/mock/gomock"
 )
@@ -24,21 +25,23 @@ func TestLoadFilesSuccess(t *testing.T) {
 	c := gomock.NewController(t)
 	defer c.Finish()
 
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 	// successful pattern
 	filenameSuccess := "success.txt"
 	path := filepath.Join(d.Dir(), filenameSuccess)
 	d.AddFile("success", filenameSuccess, content, 0666)
-	m.EXPECT().MatchAny(path).Return(true)
+	m.EXPECT().Match(path).Return(true)
 
-	// add Expects for CompilePatterns
+	// add Expects for Prepare
 	emptyPatterns := make([]string, 0)
-	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+	op := generator.OptionFlagEntity{
+		IncludePatterns: emptyPatterns,
+	}
+	m.EXPECT().Prepare(op).AnyTimes().Return(nil)
 
 	// create usecase
-	iu := New(m)
-
-	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	iu := New([]generator.PathMatcherRepository{m})
+	_, err := iu.LoadFiles([]string{d.Dir()}, op)
 	if err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
@@ -53,17 +56,19 @@ func TestLoadFilesErrorCompile(t *testing.T) {
 	c := gomock.NewController(t)
 	defer c.Finish()
 
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 
-	// add Expects for CompilePatterns
+	// add Expects for Prepare
 	emptyPatterns := make([]string, 0)
 	dummyError := errors.New("dummy")
-	m.EXPECT().CompilePatterns(emptyPatterns).Return(dummyError)
+	op := generator.OptionFlagEntity{
+		IncludePatterns: emptyPatterns,
+	}
+	m.EXPECT().Prepare(op).AnyTimes().Return(dummyError)
 
 	// create usecase
-	iu := New(m)
-
-	_, err := iu.LoadFiles([]string{d.Dir()}, emptyPatterns)
+	iu := New([]generator.PathMatcherRepository{m})
+	_, err := iu.LoadFiles([]string{d.Dir()}, op)
 	if err == nil {
 		t.Error("addFile should return error")
 	}
@@ -80,22 +85,24 @@ func TestLoadFilesErrorAddFile(t *testing.T) {
 	c := gomock.NewController(t)
 	defer c.Finish()
 
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 
 	// should not be contained
 	fileDoesNotPermitted := "fail.txt"
 	permitWrongPath := filepath.Join(d.Dir(), fileDoesNotPermitted)
 	d.AddFile("success", fileDoesNotPermitted, content, 0000)
-	m.EXPECT().MatchAny(permitWrongPath).AnyTimes().Return(true)
+	m.EXPECT().Match(permitWrongPath).AnyTimes().Return(true)
 
-	// add Expects for CompilePatterns
+	// add Expects for Prepare
 	emptyPatterns := make([]string, 0)
-	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+	op := generator.OptionFlagEntity{
+		IncludePatterns: emptyPatterns,
+	}
+	m.EXPECT().Prepare(op).AnyTimes().Return(nil)
 
 	// create usecase
-	iu := New(m)
-
-	_, err := iu.LoadFiles([]string{d.Dir(), permitWrongPath}, emptyPatterns)
+	iu := New([]generator.PathMatcherRepository{m})
+	_, err := iu.LoadFiles([]string{d.Dir(), permitWrongPath}, op)
 	if err == nil {
 		t.Error("addFile should return error")
 	}
@@ -113,22 +120,24 @@ func TestLoadFilesSkipNotMatchedFile(t *testing.T) {
 	c := gomock.NewController(t)
 	defer c.Finish()
 
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 
 	// should not be contained
 	fileDoesNotMatch := "doesnotmatch.txt"
 	notMatchPath := filepath.Join(d.Dir(), fileDoesNotMatch)
 	d.AddFile("wrong path file", fileDoesNotMatch, content, 0666)
-	m.EXPECT().MatchAny(notMatchPath).AnyTimes().Return(false)
+	m.EXPECT().Match(notMatchPath).AnyTimes().Return(false)
 
-	// add Expects for CompilePatterns
+	// add Expects for Prepare
 	emptyPatterns := make([]string, 0)
-	m.EXPECT().CompilePatterns(emptyPatterns).Return(nil)
+	op := generator.OptionFlagEntity{
+		IncludePatterns: emptyPatterns,
+	}
+	m.EXPECT().Prepare(op).AnyTimes().Return(nil)
 
 	// create usecase
-	iu := New(m)
-
-	result, err := iu.LoadFiles([]string{d.Dir(), notMatchPath}, emptyPatterns)
+	iu := New([]generator.PathMatcherRepository{m})
+	result, err := iu.LoadFiles([]string{d.Dir(), notMatchPath}, op)
 	if err != nil {
 		t.Error("addFile should not return error")
 	}
@@ -160,25 +169,25 @@ func TestAddFileForSingleFiles(t *testing.T) {
 	c := gomock.NewController(t)
 	defer c.Finish()
 
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 	// successful pattern
 	filenameSuccess := "success.txt"
 	path := filepath.Join(d.Dir(), filenameSuccess)
 	d.AddFile("success", filenameSuccess, content, 0666)
-	m.EXPECT().MatchAny(path).Return(true)
+	m.EXPECT().Match(path).Return(true)
 	// should not be contained
 	fileDoesNotMatch := "doesnotmatch.txt"
 	pathDoesNotMatch := filepath.Join(d.Dir(), fileDoesNotMatch)
 	d.AddFile("wrong path file", fileDoesNotMatch, content, 0666)
-	m.EXPECT().MatchAny(pathDoesNotMatch).Return(false)
+	m.EXPECT().Match(pathDoesNotMatch).Return(false)
 	// file can not be opened
 	d.AddFile("wrong path file", pathDoesNotMatch, content, 0666)
 	closedPath := filepath.Join(d.Dir(), "closed.txt")
 	ioutil.WriteFile(closedPath, []byte(""), 0000)
-	m.EXPECT().MatchAny(closedPath).Return(true)
+	m.EXPECT().Match(closedPath).Return(true)
 
 	// create usecase
-	iu := New(m)
+	iu := New([]generator.PathMatcherRepository{m})
 
 	u := iu.(*UseCase)
 	// success pattern
@@ -211,18 +220,18 @@ func TestAddFileForDirectory(t *testing.T) {
 	// Prepare mock
 	c := gomock.NewController(t)
 	defer c.Finish()
-	m := mock.NewMockRegexpRepository(c)
+	m := mock.NewMockPathMatcherRepository(c)
 
 	// successful pattern
 	filenameSuccess1 := "/child/success1.txt"
 	path1 := filepath.Join(d.Dir(), filenameSuccess1)
 	d.AddFile("success", filenameSuccess1, content, 0666)
-	m.EXPECT().MatchAny(path1).Return(true)
+	m.EXPECT().Match(path1).Return(true)
 
 	filenameSuccess2 := "/child/success2.txt"
 	path2 := filepath.Join(d.Dir(), filenameSuccess2)
 	d.AddFile("success", filenameSuccess2, content, 0666)
-	m.EXPECT().MatchAny(path2).Return(true)
+	m.EXPECT().Match(path2).Return(true)
 
 	// permission denied dir
 	deniedDir := "/permissiondeny"
@@ -233,7 +242,7 @@ func TestAddFileForDirectory(t *testing.T) {
 	filenameSuccess3 := "/fail.txt"
 	path3 := filepath.Join(d.Dir(), filenameSuccess3)
 	d.AddFile("success", filenameSuccess3, content, 0000)
-	m.EXPECT().MatchAny(path3).AnyTimes().Return(true)
+	m.EXPECT().Match(path3).AnyTimes().Return(true)
 
 	// permission denied file in permitted dir
 	permittedDir := "/permitteddir"
@@ -245,10 +254,10 @@ func TestAddFileForDirectory(t *testing.T) {
 	if err := d.AddFile("permitted_denied", deniedFile, content, 0000); err != nil {
 		panic(err)
 	}
-	m.EXPECT().MatchAny(deniedFilePath).Return(true)
+	m.EXPECT().Match(deniedFilePath).Return(true)
 
 	// create usecase
-	iu := New(m)
+	iu := New([]generator.PathMatcherRepository{m})
 	u := iu.(*UseCase)
 
 	// success pattern
