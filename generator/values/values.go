@@ -34,6 +34,7 @@ var (
 		FlagKeyName,
 		FlagKeyOut,
 		FlagKeyPackage,
+		FlagKeyIgnoreDotfiles,
 	}
 	FlagReaderMap = map[string]FlagReader{
 		FlagKeyExpression: func(c *cli.Context) string {
