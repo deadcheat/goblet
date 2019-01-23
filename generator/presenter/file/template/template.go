@@ -41,10 +41,12 @@ var {{ $VarName }} = goblet.NewFS(
 	},
 )
 
+{{ if not eq (len .Paths) 0 }}
 // binary data
 var (
 	{{- range $p := .Paths }}{{ with (index $FileMap $p) }}
 	{{if not .IsDir }}_{{ $VarName }}{{ sha1 $p}} = {{ printData .Data }}{{ end }}{{ end }}
 	{{- end }}
 )
+{{ end }}
 `
