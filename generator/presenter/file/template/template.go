@@ -11,6 +11,7 @@ type Assets struct {
 	DirMap             map[string][]string
 	FileMap            map[string]*goblet.File
 	Paths              []string
+	HasFileData        bool
 }
 
 // AssetFileTemplate template for asset file
@@ -36,16 +37,15 @@ var {{ $VarName }} = goblet.NewFS(
 	},
 	map[string]*goblet.File {
 		{{- range $p := .Paths }}{{ with (index $FileMap $p)}}
-		"{{$p}}": goblet.NewFile("{{$p}}", {{if .IsDir }}nil{{ else }}[]byte(_{{ $VarName }}{{ sha1 $p }}){{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
+		"{{$p}}": goblet.NewFile("{{$p}}", {{if .IsDir }}nil{{ else if eq (len .Data) 0 }}[]byte{}{{ else }}_{{ $VarName }}{{ sha1 $p }}{{ end }}, {{ printf "%#v" .FileMode }}, time.Unix({{ .ModifiedAt.Unix }}, {{ .ModifiedAt.UnixNano }})),{{ end }}
 		{{- end }}
 	},
 )
-
-{{ if not eq (len .Paths) 0 }}
+{{ if .HasFileData }}
 // binary data
 var (
 	{{- range $p := .Paths }}{{ with (index $FileMap $p) }}
-	{{if not .IsDir }}_{{ $VarName }}{{ sha1 $p}} = {{ printData .Data }}{{ end }}{{ end }}
+	{{if and (not .IsDir) ( ne (len .Data) 0) }}_{{ $VarName }}{{ sha1 $p}} = []byte({{ printData .Data }}){{ end }}{{ end }}
 	{{- end }}
 )
 {{ end }}
