@@ -155,7 +155,7 @@ func TestActionSuccessWithStdout(t *testing.T) {
 	// stdout pattern
 	ctx := cli.NewContext(a, set, nil)
 	if err := p.action(ctx); err != nil {
-		t.Error("Mount should not return any error: ", err)
+		t.Error("action should not return any error: ", err)
 	}
 }
 
