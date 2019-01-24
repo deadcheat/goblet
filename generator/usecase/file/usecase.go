@@ -50,7 +50,7 @@ func (u *UseCase) LoadFiles(paths []string, option generator.OptionFlagEntity) (
 		path := paths[i]
 		if err := u.addFile(path); err != nil {
 			if err == ErrFileIsNotMatchExpression {
-				log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
+				log.Printf("%s is excluded because it is not matched with specified condition", path)
 				continue
 			}
 			return nil, err
@@ -105,7 +105,7 @@ func (u *UseCase) addFile(path string) (err error) {
 		err = u.addFile(childPath)
 		if err != nil {
 			if err == ErrFileIsNotMatchExpression {
-				log.Printf("path %s is not matched pattern given in 'expression(e)' flag", path)
+				log.Printf("%s is excluded because it is not matched with specified condition", childPath)
 				continue
 			}
 			return err

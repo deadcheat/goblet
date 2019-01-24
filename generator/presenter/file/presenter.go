@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/deadcheat/goblet"
 	"github.com/deadcheat/goblet/generator"
 	pt "github.com/deadcheat/goblet/generator/presenter/file/template"
 	"github.com/deadcheat/goblet/generator/values"
@@ -77,6 +78,7 @@ func (p *Presenter) action(c *cli.Context) error {
 		DirMap:             e.DirMap,
 		FileMap:            e.FileMap,
 		Paths:              e.Paths,
+		HasFileData: hasAnyData(e.FileMap),
 	}
 	targetPaths := paths
 	var writer io.Writer = os.Stdout
@@ -117,6 +119,15 @@ func (p *Presenter) action(c *cli.Context) error {
 	}
 	fmt.Fprintln(writer, string(formatted))
 	return nil
+}
+
+func hasAnyData(m map[string]*goblet.File) bool {
+	for _, v := range m {
+		if len(v.Data ) != 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func executedCommand(c *cli.Context, argPaths []string) string {
