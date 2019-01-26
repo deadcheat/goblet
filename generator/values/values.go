@@ -44,7 +44,9 @@ var (
 			es := c.StringSlice(FlagKeyExpression)
 			var buf bytes.Buffer
 			for _, e := range es {
-				_, _ = buf.WriteString(fmt.Sprintf("-%s %s", "e", e))
+				if _, err := buf.WriteString(fmt.Sprintf("-%s %s", "e", e)); err != nil {
+					return ""
+				}
 			}
 			return buf.String()
 		},
