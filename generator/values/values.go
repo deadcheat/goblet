@@ -91,7 +91,7 @@ var (
 		},
 		cli.BoolFlag{
 			Name:  FlagKeyExcludeEmptyDir,
-			Usage: "If set, ignore dotfiles(i.e. '.gitkeep') ",
+			Usage: "If set, ignore empty directories",
 		},
 		cli.StringFlag{
 			Name:  "name, n",
