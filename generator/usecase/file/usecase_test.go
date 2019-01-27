@@ -191,21 +191,21 @@ func TestAddFileForSingleFiles(t *testing.T) {
 
 	u := iu.(*UseCase)
 	// success pattern
-	err := u.addFile(path)
+	err := u.addFile(path, generator.OptionFlagEntity{})
 	if err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
-	err = u.addFile(pathDoesNotMatch)
+	err = u.addFile(pathDoesNotMatch, generator.OptionFlagEntity{})
 	if err != ErrFileIsNotMatchExpression {
 		t.Error("addFile should return ErrFileIsNotMatchExpression but returned ", err)
 	}
 	// filename does not exist
 	brokenPath := filepath.Join(d.Dir(), "/this/is/match/but/broken.txt")
-	err = u.addFile(brokenPath)
+	err = u.addFile(brokenPath, generator.OptionFlagEntity{})
 	if err == nil {
 		t.Error("addFile should return some error")
 	}
-	err = u.addFile(closedPath)
+	err = u.addFile(closedPath, generator.OptionFlagEntity{})
 	if err == nil {
 		t.Error("addFile should return some error")
 	}
@@ -262,21 +262,23 @@ func TestAddFileForDirectory(t *testing.T) {
 
 	// success pattern
 	targetDir := filepath.Join(d.Dir(), "/child")
-	if err := u.addFile(targetDir); err != nil {
+	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
 
-	// when directory is not permittedf
-	if err := u.addFile(filepath.Join(d.Dir(), deniedDir)); err == nil {
+	// when directory is not permitted
+	targetDir = filepath.Join(d.Dir(), deniedDir)
+	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when dir is denied")
 	}
 
-	// when file in dir is permitted
-	if err := u.addFile(filepath.Join(d.Dir(), permittedDir)); err == nil {
+	// when file in dir is not permitted
+	targetDir = filepath.Join(d.Dir(), permittedDir)
+	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
 	}
 	// when file in dir is not permitted
-	if err := u.addFile(path3); err == nil {
+	if err := u.addFile(path3, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
 	}
 }
