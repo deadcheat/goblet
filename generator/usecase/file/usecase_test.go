@@ -265,11 +265,24 @@ func TestAddFileForDirectory(t *testing.T) {
 	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err != nil {
 		t.Error("addFile should not return any errors", err)
 	}
+	expectedPaths := []string{targetDir, path1, path2}
+	for _, expectedPath := range expectedPaths {
+		_, ok := u.fileMap[expectedPath]
+		if !ok {
+			t.Errorf("addFile should set valid path to fileMap but %s is not included \n", targetDir)
+		}
+	}
+
+	// when directory is empty and exclude empty dir
 
 	// when directory is not permitted
 	targetDir = filepath.Join(d.Dir(), deniedDir)
 	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when dir is denied")
+	}
+	_, ok := u.fileMap[targetDir]
+	if ok {
+		t.Errorf("addFile should not set valid path to fileMap but %s is included \n", targetDir)
 	}
 
 	// when file in dir is not permitted
@@ -277,8 +290,17 @@ func TestAddFileForDirectory(t *testing.T) {
 	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
 	}
+	_, ok = u.fileMap[targetDir]
+	if ok {
+		t.Errorf("addFile should not set valid path to fileMap but %s is included \n", targetDir)
+	}
+
 	// when file in dir is not permitted
 	if err := u.addFile(path3, generator.OptionFlagEntity{}); err == nil {
 		t.Error("addFile should return any error when file in dir is denied")
+	}
+	_, ok = u.fileMap[path3]
+	if ok {
+		t.Errorf("addFile should not set valid path to fileMap but %s is included \n", path3)
 	}
 }
