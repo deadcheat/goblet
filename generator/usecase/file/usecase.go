@@ -88,9 +88,8 @@ func (u *UseCase) addFile(path string, option generator.OptionFlagEntity) (err e
 		u.fileMap[vPath] = file
 		return nil
 	}
-	u.validPaths = append(u.validPaths, vPath)
-	children := u.dirMap[vPath]
-	if children == nil {
+	children, found := u.dirMap[vPath]
+	if !found {
 		children = make([]string, 0)
 	}
 	var files []os.FileInfo
@@ -112,8 +111,11 @@ func (u *UseCase) addFile(path string, option generator.OptionFlagEntity) (err e
 		}
 		children = append(children, filepath.Base(childPath))
 	}
+	if option.ExcludeEmptyDir && len(children) == 0 {
+		return nil
+	}
 	u.dirMap[vPath] = children
-	d := goblet.NewFromFileInfo(fi, vPath, nil)
-	u.fileMap[vPath] = d
+	u.validPaths = append(u.validPaths, vPath)
+	u.fileMap[vPath] = goblet.NewFromFileInfo(fi, vPath, nil)
 	return nil
 }
