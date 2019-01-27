@@ -11,9 +11,11 @@ type Entity struct {
 	Paths   []string
 }
 
+// OptionFlagEntity stores option flag values
 type OptionFlagEntity struct {
 	IncludePatterns []string
 	IgnoreDotFiles  bool
+	ExcludeEmptyDir bool
 }
 
 // UseCase interface
