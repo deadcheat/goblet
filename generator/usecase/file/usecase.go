@@ -48,7 +48,7 @@ func (u *UseCase) LoadFiles(paths []string, option generator.OptionFlagEntity) (
 	}
 	for i := range paths {
 		path := paths[i]
-		if err := u.addFile(path); err != nil {
+		if err := u.addFile(path, option); err != nil {
 			if err == ErrFileIsNotMatchExpression {
 				log.Printf("%s is excluded because it is not matched with specified condition", path)
 				continue
@@ -65,7 +65,7 @@ func (u *UseCase) LoadFiles(paths []string, option generator.OptionFlagEntity) (
 	return e, nil
 }
 
-func (u *UseCase) addFile(path string) (err error) {
+func (u *UseCase) addFile(path string, option generator.OptionFlagEntity) (err error) {
 	vPath := filepath.Join("/", path)
 	fi, err := os.Stat(path)
 	if err != nil {
@@ -88,9 +88,8 @@ func (u *UseCase) addFile(path string) (err error) {
 		u.fileMap[vPath] = file
 		return nil
 	}
-	u.validPaths = append(u.validPaths, vPath)
-	children := u.dirMap[vPath]
-	if children == nil {
+	children, found := u.dirMap[vPath]
+	if !found {
 		children = make([]string, 0)
 	}
 	var files []os.FileInfo
@@ -102,7 +101,7 @@ func (u *UseCase) addFile(path string) (err error) {
 	for i := range files {
 		f := files[i]
 		childPath := filepath.Join(path, f.Name())
-		err = u.addFile(childPath)
+		err = u.addFile(childPath, option)
 		if err != nil {
 			if err == ErrFileIsNotMatchExpression {
 				log.Printf("%s is excluded because it is not matched with specified condition", childPath)
@@ -112,8 +111,11 @@ func (u *UseCase) addFile(path string) (err error) {
 		}
 		children = append(children, filepath.Base(childPath))
 	}
+	if option.ExcludeEmptyDir && len(children) == 0 {
+		return nil
+	}
 	u.dirMap[vPath] = children
-	d := goblet.NewFromFileInfo(fi, vPath, nil)
-	u.fileMap[vPath] = d
+	u.validPaths = append(u.validPaths, vPath)
+	u.fileMap[vPath] = goblet.NewFromFileInfo(fi, vPath, nil)
 	return nil
 }

@@ -24,6 +24,8 @@ const (
 	FlagKeyPackage = "package"
 	// FlagKeyIgnoreDotfiles flag name "ignore-dotfile"
 	FlagKeyIgnoreDotfiles = "ignore-dotfiles"
+	// FlagKeyExcludeEmptyDir flag name "exclude-empty-dir"
+	FlagKeyExcludeEmptyDir = "exclude-empty-dir"
 )
 
 // FlagDefs exported variables for flag defnition
@@ -35,13 +37,16 @@ var (
 		FlagKeyOut,
 		FlagKeyPackage,
 		FlagKeyIgnoreDotfiles,
+		FlagKeyExcludeEmptyDir,
 	}
 	FlagReaderMap = map[string]FlagReader{
 		FlagKeyExpression: func(c *cli.Context) string {
 			es := c.StringSlice(FlagKeyExpression)
 			var buf bytes.Buffer
 			for _, e := range es {
-				_, _ = buf.WriteString(fmt.Sprintf("-%s %s", "e", e))
+				if _, err := buf.WriteString(fmt.Sprintf("-%s %s", "e", e)); err != nil {
+					return ""
+				}
 			}
 			return buf.String()
 		},
@@ -54,6 +59,12 @@ var (
 		FlagKeyIgnoreDotfiles: func(c *cli.Context) string {
 			if c.Bool(FlagKeyIgnoreDotfiles) {
 				return "--ignore-dotfiles"
+			}
+			return ""
+		},
+		FlagKeyExcludeEmptyDir: func(c *cli.Context) string {
+			if c.Bool(FlagKeyExcludeEmptyDir) {
+				return "--exclude-empty-dir"
 			}
 			return ""
 		},
@@ -75,8 +86,12 @@ var (
 			Usage: "If set, generate go:generate line to outputfile",
 		},
 		cli.BoolFlag{
-			Name:  "ignore-dotfiles",
+			Name:  FlagKeyIgnoreDotfiles,
 			Usage: "If set, ignore dotfiles(i.e. '.gitkeep') ",
+		},
+		cli.BoolFlag{
+			Name:  FlagKeyExcludeEmptyDir,
+			Usage: "If set, ignore empty directories",
 		},
 		cli.StringFlag{
 			Name:  "name, n",
