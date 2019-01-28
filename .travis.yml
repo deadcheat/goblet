@@ -7,14 +7,13 @@ before_install:
     - go get -v -u github.com/modocache/gover
     - go get -v -u github.com/mattn/goveralls
     - go get -v -u golang.org/x/tools/cmd/cover
-    - go get -v -u github.com/Masterminds/glide
-install:
-    - $GOPATH/bin/glide install
+install: true
 script:
-    - go test -coverprofile=goblet.coverprofile github.com/deadcheat/goblet
-    - go test -coverprofile=goblet-presenter.coverprofile github.com/deadcheat/goblet/generator/presenter/file
-    - go test -coverprofile=goblet-repository.dotfileignore.coverprofile github.com/deadcheat/goblet/generator/repository/dotfileignorematcher
-    - go test -coverprofile=goblet-repository.regexpmatcher.coverprofile github.com/deadcheat/goblet/generator/repository/regexpmatcher
-    - go test -coverprofile=goblet-usecase.coverprofile github.com/deadcheat/goblet/generator/usecase/file
+    - env GO111MODULE=on go build
+    - env GO111MODULE=on go test -coverprofile=goblet.coverprofile github.com/deadcheat/goblet
+    - env GO111MODULE=on go test -coverprofile=goblet-presenter.coverprofile github.com/deadcheat/goblet/generator/presenter/file
+    - env GO111MODULE=on go test -coverprofile=goblet-repository.dotfileignore.coverprofile github.com/deadcheat/goblet/generator/repository/dotfileignorematcher
+    - env GO111MODULE=on go test -coverprofile=goblet-repository.regexpmatcher.coverprofile github.com/deadcheat/goblet/generator/repository/regexpmatcher
+    - env GO111MODULE=on go test -coverprofile=goblet-usecase.coverprofile github.com/deadcheat/goblet/generator/usecase/file
     - $HOME/gopath/bin/gover
     - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci
