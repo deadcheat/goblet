@@ -1,4 +1,4 @@
-module .
+module github.com/deadcheat/goblet
 
 require (
 	github.com/deadcheat/gonch v0.0.0-20180528124129-c2ff7a019863
