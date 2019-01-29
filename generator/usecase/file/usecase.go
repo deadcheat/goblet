@@ -49,11 +49,7 @@ func (u *UseCase) LoadFiles(paths []string, option generator.OptionFlagEntity) (
 	for i := range paths {
 		path := paths[i]
 		if err := u.addFile(path, option); err != nil {
-			if err == ErrFileIsNotMatchExpression {
-				log.Printf("%s is excluded because it is not matched with specified condition", path)
-				continue
-			}
-			return nil, err
+			log.Printf("%s is skipped because error occurred when access it, cause: %s", path, err.Error())
 		}
 	}
 	e := &generator.Entity{
@@ -101,13 +97,8 @@ func (u *UseCase) addFile(path string, option generator.OptionFlagEntity) (err e
 	for i := range files {
 		f := files[i]
 		childPath := filepath.Join(path, f.Name())
-		err = u.addFile(childPath, option)
-		if err != nil {
-			if err == ErrFileIsNotMatchExpression {
-				log.Printf("%s is excluded because it is not matched with specified condition", childPath)
-				continue
-			}
-			return err
+		if err = u.addFile(childPath, option); err != nil {
+			log.Printf("%s is skipped because error occurred when access it, cause: %s", childPath, err.Error())
 		}
 		children = append(children, filepath.Base(childPath))
 	}
