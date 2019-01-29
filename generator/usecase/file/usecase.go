@@ -99,6 +99,7 @@ func (u *UseCase) addFile(path string, option generator.OptionFlagEntity) (err e
 		childPath := filepath.Join(path, f.Name())
 		if err = u.addFile(childPath, option); err != nil {
 			log.Printf("%s is skipped because error occurred when access it, cause: %s", childPath, err.Error())
+			continue
 		}
 		children = append(children, filepath.Base(childPath))
 	}
