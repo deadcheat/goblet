@@ -103,8 +103,8 @@ func TestLoadFilesErrorAddFile(t *testing.T) {
 	// create usecase
 	iu := New([]generator.PathMatcherRepository{m})
 	_, err := iu.LoadFiles([]string{d.Dir(), permitWrongPath}, op)
-	if err == nil {
-		t.Error("addFile should return error")
+	if err != nil {
+		t.Errorf("addFile should not return error when permission error occurred, but occurred %+v", err)
 	}
 
 }
@@ -301,8 +301,8 @@ func TestAddFileForDirectory(t *testing.T) {
 
 	// when file in dir is not permitted
 	targetDir = filepath.Join(d.Dir(), permittedDir)
-	if err := u.addFile(targetDir, generator.OptionFlagEntity{}); err == nil {
-		t.Error("addFile should return any error when file in dir is denied")
+	if err := u.addFile(targetDir, generator.OptionFlagEntity{ExcludeEmptyDir: true}); err != nil {
+		t.Errorf("addFile should not return any error when file in dir is denied, but occurred %+v", err)
 	}
 	_, ok = u.fileMap[targetDir]
 	if ok {
